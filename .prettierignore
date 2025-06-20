@@ -1,0 +1,21 @@
+# Ignore build outputs
+dist
+build
+
+# Node modules
+node_modules
+
+# Logs
+*.log
+
+# Coverage reports
+coverage
+
+# System files
+.DS_Store
+
+# Vite cache
+.vite
+
+# Environment files
+.env
