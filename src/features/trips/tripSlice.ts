@@ -3,9 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import { TripState } from "../../types/trips";
 import { fetchTrips } from "./tripsThunk";
 
-
-
-
 const initialState: TripState = {
   trips: [],
   status: "idle",

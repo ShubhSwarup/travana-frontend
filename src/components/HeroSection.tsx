@@ -2,10 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import AuthModal from "./Auth/AuthModal";
 import { AuthMode } from "../types/auth";
 
-
 const HeroSection = () => {
   // List of video paths stored in /public/videos/
-  const videos : string[]= [
+  const videos: string[] = [
     "/videos/bg1.mp4",
     "/videos/bg2.mp4",
     "/videos/bg3.mp4",
@@ -23,7 +22,6 @@ const HeroSection = () => {
   const [authMode, setAuthMode] = useState<AuthMode>("signup");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-
   // Preload the selected video and update state once it's ready
   useEffect(() => {
     const video = document.createElement("video");
@@ -33,11 +31,10 @@ const HeroSection = () => {
     };
   }, [randomVideo]);
 
-    const openModal = (mode:AuthMode) => {
+  const openModal = (mode: AuthMode) => {
     setAuthMode(mode);
     setIsModalOpen(true);
   };
-
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -77,8 +74,18 @@ const HeroSection = () => {
 
         {/* Action buttons */}
         <div className="flex gap-4">
-           <button className="btn btn-primary" onClick={() => openModal("signup")}>Sign Up</button>
-           <button className="btn btn-outline btn-accent" onClick={() => openModal("login")}>Login</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => openModal("signup")}
+          >
+            Sign Up
+          </button>
+          <button
+            className="btn btn-outline btn-accent"
+            onClick={() => openModal("login")}
+          >
+            Login
+          </button>
         </div>
       </div>
 
@@ -88,7 +95,13 @@ const HeroSection = () => {
           <span className="loading loading-spinner loading-lg text-white"></span>
         </div>
       )}
-      {isModalOpen && <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} mode={authMode} />}
+      {isModalOpen && (
+        <AuthModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          mode={authMode}
+        />
+      )}
     </div>
   );
 };

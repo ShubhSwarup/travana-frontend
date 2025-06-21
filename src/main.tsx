@@ -9,7 +9,7 @@ import "./index.css";
 const rootElement = document.getElementById("root") as HTMLElement;
 
 createRoot(rootElement).render(
-    <Provider store={store}>
-      <App />
-    </Provider>
+  <Provider store={store}>
+    <App />
+  </Provider>,
 );

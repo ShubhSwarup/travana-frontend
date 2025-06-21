@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function TripOverview() {
-  return (
-    <div>TripOverview</div>
-  )
+  return <div>TripOverview</div>;
 }
 
-export default TripOverview
+export default TripOverview;

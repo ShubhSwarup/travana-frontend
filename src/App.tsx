@@ -7,10 +7,17 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-     <BrowserRouter>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-       <Route path="/trips" element={<ProtectedRoute><Trips /></ProtectedRoute>} />
+        <Route
+          path="/trips"
+          element={
+            <ProtectedRoute>
+              <Trips />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/trip/:id" element={<TripOverview />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

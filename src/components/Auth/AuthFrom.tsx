@@ -25,7 +25,7 @@ interface AuthFormProps {
 }
 const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
   const isSignup = mode === "signup";
- 
+
   const {
     register,
     handleSubmit,
@@ -33,9 +33,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
   } = useForm<LoginFormData | SignupFormData>({
     resolver: zodResolver(isSignup ? signupSchema : loginSchema),
   });
-
-
-
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
