@@ -9,17 +9,20 @@ import { AppDispatch } from "../../app/store";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../../features/auth/authThunks";
 
-
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode?: "login" | "signup";
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode = "login" }) => {
+const AuthModal: React.FC<AuthModalProps> = ({
+  isOpen,
+  onClose,
+  mode = "login",
+}) => {
   const [formMode, setFormMode] = useState<AuthMode>(mode);
- const dispatch = useDispatch<AppDispatch>();
-const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const isSignup = formMode === "signup";
   const handleFormSubmit = async (data: any) => {
     try {
@@ -33,7 +36,7 @@ const navigate = useNavigate();
       console.error("Auth error", err);
     }
   };
-  
+
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
@@ -83,11 +86,8 @@ const navigate = useNavigate();
                 {isSignup ? "Create account" : "Log in"}
               </button>
             </form> */}
-            
-            <AuthForm
-              mode={formMode}
-              onSubmit={handleFormSubmit}
-            />
+
+            <AuthForm mode={formMode} onSubmit={handleFormSubmit} />
             <div className="text-sm text-center mt-4">
               {isSignup ? (
                 <>
@@ -116,7 +116,6 @@ const navigate = useNavigate();
       </div>
     </Dialog>
   );
-}
+};
 
 export default AuthModal;
-
