@@ -34,7 +34,7 @@ const tripSchema = z
     {
       message: "Start and end dates must both be filled and valid",
       path: ["endDate"],
-    },
+    }
   );
 
 export type TripFormData = z.infer<typeof tripSchema>;
@@ -62,7 +62,7 @@ export default function CreateTripModal({
   const [query, setQuery] = useState("");
   //   const [suggestions, setSuggestions] = useState<string[]>([]);
   const { suggestions, loading } = useSelector(
-    (state: RootState) => state.destination,
+    (state: RootState) => state.destination
   );
   const [skipNextEffect, setSkipNextEffect] = useState(false);
 
@@ -91,8 +91,18 @@ export default function CreateTripModal({
       setValue("startDate", localStartDate);
       setValue("endDate", localEndDate);
     }
+    setShowDatePicker(false);
   };
 
+  const handleUnpannedDates = () => {
+    if (localStartDate && localEndDate) {
+      setValue("startDate", "");
+      setValue("endDate", "");
+    }
+    setLocalStartDate("");
+    setLocalEndDate("");
+    setShowDatePicker(false);
+  };
   return (
     <dialog
       id="create_trip_modal"
@@ -181,19 +191,21 @@ export default function CreateTripModal({
               ℹ️
             </span>
           </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              readOnly
-              value={
-                localStartDate && localEndDate
-                  ? `${localStartDate} → ${localEndDate}`
-                  : "Select date range"
-              }
-              onClick={() => setShowDatePicker(!showDatePicker)}
-              className="input input-bordered w-full cursor-pointer"
-            />
-          </div>
+          {!showDatePicker && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                readOnly
+                value={
+                  localStartDate && localEndDate
+                    ? `${localStartDate} → ${localEndDate}`
+                    : "Select date range"
+                }
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className="input input-bordered w-full cursor-pointer"
+              />
+            </div>
+          )}
           {showDatePicker && (
             <div className="mt-2 flex gap-2 items-center">
               <input
@@ -215,6 +227,13 @@ export default function CreateTripModal({
                 onClick={handleDateSelect}
               >
                 Set
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-primary"
+                onClick={handleUnpannedDates}
+              >
+                unplanned
               </button>
             </div>
           )}
