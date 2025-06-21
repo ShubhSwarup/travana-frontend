@@ -12,10 +12,17 @@ export default function TopNavBar() {
     () => localStorage.getItem("theme") || "light",
   );
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+useEffect(() => {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+
+  // Add/remove Tailwind dark mode class
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+}, [theme]);
 
   const handleLogout = () => {
     dispatch(logout());

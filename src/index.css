@@ -1,17 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
-
-@layer components {
-  .custom-calendar .rdrCalendarWrapper {
-    @apply bg-base-100 text-base-content rounded-lg border border-base-300 p-2 shadow-lg;
-  }
-}
-
-.custom-calendar .rdrCalendarWrapper {
-    background:red;
-
-}
-

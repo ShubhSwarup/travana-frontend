@@ -6,12 +6,14 @@ import TopNavBar from "../components/TopNavBar"; // ✅ Import this
 import Lottie from "lottie-react";
 import emptyStateAnimation from "../assets/animations/empty-state.json";
 import CreateTripModal from "../components/CreateTripModal";
+import GenerateTripModal from "../components/GenerateTripModal";
 
 export default function TripsPage() {
   const dispatch = useDispatch<AppDispatch>(); // ✅ Use correct AppDispatch type
   const { trips, status } = useSelector((state: RootState) => state.trips);
   const hasTrips = trips.length > 0;
   const [isCreateModalOpen, setCreateModalOpen] = useState<boolean>(false);
+   const [isCreateAiModalOpen, setCreateAiModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(fetchTrips());
@@ -40,7 +42,7 @@ export default function TripsPage() {
               >
                 + New Trip
               </button>
-              <button className="btn btn-accent">✨ New Trip with AI</button>
+              <button className="btn btn-accent"  onClick={() => setCreateAiModalOpen(true)}>✨ New Trip with AI</button>
             </div>
           </div>
         ) : (
@@ -50,6 +52,12 @@ export default function TripsPage() {
       <CreateTripModal
         isOpen={isCreateModalOpen}
         onClose={() => setCreateModalOpen(false)}
+      />
+
+      <GenerateTripModal
+      isOpen={isCreateAiModalOpen}
+      onClose={()=>setCreateAiModalOpen(false)}
+      // onGenerate={()=>{}}
       />
     </div>
   );
