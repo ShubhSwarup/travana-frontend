@@ -2,15 +2,17 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import debounce from "lodash/debounce";
+import { useState, useEffect, useRef } from "react";
+import { format, differenceInDays } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { fetchDestinationSuggestions } from "../features/destination/destinationThunk";
 import { clearSuggestions } from "../features/destination/destinationSlice";
 import { Info } from "lucide-react";
-import { differenceInDays } from "date-fns";
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 const tripSchema = z
   .object({
@@ -55,31 +57,38 @@ export default function CreateTripModal({
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<TripFormData>({
     resolver: zodResolver(tripSchema),
   });
 
-  const [query, setQuery] = useState("");
-  //   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const { suggestions, loading } = useSelector(
-    (state: RootState) => state.destination
-  );
-  const [skipNextEffect, setSkipNextEffect] = useState(false);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
+  const [query, setQuery] = useState("");
+  const { suggestions } = useSelector((state: RootState) => state.destination);
+  const [skipNextEffect, setSkipNextEffect] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [localStartDate, setLocalStartDate] = useState<string>("");
-  const [localEndDate, setLocalEndDate] = useState<string>("");
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
 
   const tripDuration =
-    localStartDate && localEndDate
-      ? differenceInDays(new Date(localEndDate), new Date(localStartDate)) + 1
+    dateRange[0].startDate && dateRange[0].endDate
+      ? differenceInDays(
+          new Date(dateRange[0].endDate),
+          new Date(dateRange[0].startDate)
+        ) + 1
       : null;
+
+  useClickOutside(calendarRef, () => setShowDatePicker(false));
 
   useEffect(() => {
     if (query.length < 2 || skipNextEffect) {
-      setSkipNextEffect(false); // reset after skip
+      setSkipNextEffect(false);
       return;
     }
     const debounceTimeout = setTimeout(() => {
@@ -93,23 +102,30 @@ export default function CreateTripModal({
     onClose();
   };
 
-  const handleDateSelect = () => {
-    if (localStartDate && localEndDate) {
-      setValue("startDate", localStartDate);
-      setValue("endDate", localEndDate);
-    }
+  const handleDateSelect = (ranges: any) => {
+    const { startDate, endDate } = ranges.selection;
+    setDateRange([ranges.selection]);
+    setValue("startDate", format(startDate, "yyyy-MM-dd"));
+    setValue("endDate", format(endDate, "yyyy-MM-dd"));
+
+    // if (startDate && endDate && startDate !== endDate) {
+    //   setTimeout(() => setShowDatePicker(false), 150);
+    // }
+  };
+
+  const handleUnplanned = () => {
+    setDateRange([
+      {
+        startDate: new Date(),
+        endDate: new Date(),
+        key: "selection",
+      },
+    ]);
+    setValue("startDate", "");
+    setValue("endDate", "");
     setShowDatePicker(false);
   };
 
-  const handleUnpannedDates = () => {
-    if (localStartDate && localEndDate) {
-      setValue("startDate", "");
-      setValue("endDate", "");
-    }
-    setLocalStartDate("");
-    setLocalEndDate("");
-    setShowDatePicker(false);
-  };
   return (
     <dialog
       id="create_trip_modal"
@@ -117,7 +133,7 @@ export default function CreateTripModal({
     >
       <form
         method="dialog"
-        className="modal-box w-full max-w-lg"
+        className="modal-box w-full max-w-lg sm:max-w-xl mx-auto"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h3 className="font-bold text-xl mb-6 text-center">
@@ -197,13 +213,13 @@ export default function CreateTripModal({
           {/* Dates */}
           <div>
             <label className="label flex justify-between items-center">
-              <span>
+              <span className="flex items-center gap-1">
                 Trip Dates
                 <span
-                  className="tooltip tooltip-right ml-2"
+                  className="tooltip tooltip-right"
                   data-tip="Leave both dates empty for a planned trip."
                 >
-                  <Info className="inline-block w-4 h-4 text-neutral-content" />
+                  <Info className="w-4 h-4 text-neutral-content" />
                 </span>
               </span>
               {tripDuration !== null && (
@@ -213,53 +229,48 @@ export default function CreateTripModal({
               )}
             </label>
 
-            {!showDatePicker && (
-              <input
-                type="text"
-                readOnly
-                value={
-                  localStartDate && localEndDate
-                    ? `${localStartDate} → ${localEndDate}`
-                    : "Select date range"
-                }
-                onClick={() => setShowDatePicker(true)}
-                className="input input-bordered w-full cursor-pointer"
-              />
-            )}
+            <input
+              type="text"
+              readOnly
+              className="input input-bordered cursor-pointer w-full"
+              value={
+                dateRange[0].startDate && dateRange[0].endDate
+                  ? `${format(dateRange[0].startDate, "dd MMM yyyy")} → ${format(dateRange[0].endDate, "dd MMM yyyy")}`
+                  : "Select date range"
+              }
+              onClick={() => setShowDatePicker(!showDatePicker)}
+            />
 
             {showDatePicker && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-2">
-                <input
-                  type="date"
-                  className="input input-bordered w-full sm:w-auto"
-                  value={localStartDate}
-                  onChange={(e) => setLocalStartDate(e.target.value)}
+              <div
+                className="relative z-50 mt-2 w-max mx-auto sm:mx-0"
+                ref={calendarRef}
+              >
+                <DateRange
+                  // className="calendar-popup"
+                  editableDateInputs={true}
+                  onChange={handleDateSelect}
+                  moveRangeOnFirstSelection={false}
+                  ranges={dateRange}
+                  // className="rounded-lg shadow-md custom-calendar"
+                  // rangeColors={["#2563eb"]}
+                  className="custom-calendar"
+                  rangeColors={["hsl(var(--p))"]}
+                  maxDate={new Date("2100-12-31")}
                 />
-                <span className="text-center sm:px-2">to</span>
-                <input
-                  type="date"
-                  className="input input-bordered w-full sm:w-auto"
-                  value={localEndDate}
-                  onChange={(e) => setLocalEndDate(e.target.value)}
-                />
-                <div className="flex gap-2 mt-2 sm:mt-0">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-primary"
-                    onClick={handleDateSelect}
-                  >
-                    Set
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline"
-                    onClick={handleUnpannedDates}
-                  >
-                    Unplanned
-                  </button>
-                </div>
               </div>
             )}
+
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline"
+                onClick={handleUnplanned}
+              >
+                Unplanned
+              </button>
+            </div>
+
             {errors.endDate && (
               <p className="text-error text-sm mt-1">
                 {errors.endDate.message}
@@ -268,7 +279,7 @@ export default function CreateTripModal({
           </div>
         </div>
 
-        {/* Modal action */}
+        {/* Modal Actions */}
         <div className="modal-action mt-6 flex justify-end gap-3">
           <button type="button" className="btn btn-outline" onClick={onClose}>
             Cancel
