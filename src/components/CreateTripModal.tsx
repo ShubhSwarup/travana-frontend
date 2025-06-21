@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { fetchDestinationSuggestions } from "../features/destination/destinationThunk";
 import { clearSuggestions } from "../features/destination/destinationSlice";
+import { Info } from "lucide-react";
+import { differenceInDays } from "date-fns";
 
 const tripSchema = z
   .object({
@@ -70,6 +72,11 @@ export default function CreateTripModal({
   const [localStartDate, setLocalStartDate] = useState<string>("");
   const [localEndDate, setLocalEndDate] = useState<string>("");
 
+  const tripDuration =
+    localStartDate && localEndDate
+      ? differenceInDays(new Date(localEndDate), new Date(localStartDate)) + 1
+      : null;
+
   useEffect(() => {
     if (query.length < 2 || skipNextEffect) {
       setSkipNextEffect(false); // reset after skip
@@ -110,89 +117,103 @@ export default function CreateTripModal({
     >
       <form
         method="dialog"
-        className="modal-box"
+        className="modal-box w-full max-w-lg"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h3 className="font-bold text-lg mb-4">Create a New Trip</h3>
+        <h3 className="font-bold text-xl mb-6 text-center">
+          Create a New Trip
+        </h3>
 
-        <div className="form-control mb-3">
-          <label className="label">Title</label>
-          <input
-            type="text"
-            className="input input-bordered"
-            {...register("title")}
-            maxLength={50}
-          />
-          {errors.title && (
-            <p className="text-error text-sm mt-1">{errors.title.message}</p>
-          )}
-        </div>
+        <div className="space-y-4">
+          {/* Title */}
+          <div>
+            <label className="label">Title</label>
+            <input
+              type="text"
+              className="input input-bordered w-full"
+              {...register("title")}
+              maxLength={50}
+            />
+            {errors.title && (
+              <p className="text-error text-sm mt-1">{errors.title.message}</p>
+            )}
+          </div>
 
-        <div className="form-control mb-3">
-          <label className="label">Description</label>
-          <textarea
-            className="textarea textarea-bordered"
-            {...register("description")}
-            maxLength={300}
-          />
-          {errors.description && (
-            <p className="text-error text-sm mt-1">
-              {errors.description.message}
-            </p>
-          )}
-        </div>
+          {/* Description */}
+          <div>
+            <label className="label">Description</label>
+            <textarea
+              className="textarea textarea-bordered w-full"
+              {...register("description")}
+              maxLength={300}
+            />
+            {errors.description && (
+              <p className="text-error text-sm mt-1">
+                {errors.description.message}
+              </p>
+            )}
+          </div>
 
-        <div className="form-control mb-3 relative">
-          <label className="label">Destination</label>
-          <input
-            type="text"
-            className="input input-bordered"
-            placeholder="Start typing..."
-            {...register("destination")}
-            onChange={(e) => {
-              register("destination").onChange(e);
-              setQuery(e.target.value);
-            }}
-          />
-          {suggestions.length > 0 && (
-            <ul className="absolute z-10 bg-base-100 border mt-1 rounded-box max-h-48 overflow-y-auto w-full">
-              {suggestions.map((city, idx) => (
-                <li key={idx}>
-                  <button
-                    type="button"
-                    className="w-full text-left px-4 py-2 hover:bg-base-200"
-                    onClick={() => {
-                      setValue("destination", city);
-                      setQuery(city);
-                      dispatch(clearSuggestions());
-                      setSkipNextEffect(true); // prevent dispatch on this change
-                    }}
-                  >
-                    {city}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {errors.destination && (
-            <p className="text-error text-sm mt-1">
-              {errors.destination.message}
-            </p>
-          )}
-        </div>
+          {/* Destination */}
+          <div className="relative">
+            <label className="label">Destination</label>
+            <input
+              type="text"
+              placeholder="Start typing..."
+              className="input input-bordered w-full"
+              {...register("destination")}
+              onChange={(e) => {
+                register("destination").onChange(e);
+                setQuery(e.target.value);
+              }}
+            />
+            {suggestions.length > 0 && (
+              <ul className="absolute z-10 bg-base-100 border mt-1 rounded-box max-h-48 overflow-y-auto w-full shadow">
+                {suggestions.map((city, idx) => (
+                  <li key={idx}>
+                    <button
+                      type="button"
+                      className="w-full text-left px-4 py-2 hover:bg-base-200"
+                      onClick={() => {
+                        setValue("destination", city);
+                        setQuery(city);
+                        dispatch(clearSuggestions());
+                        setSkipNextEffect(true);
+                      }}
+                    >
+                      {city}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {errors.destination && (
+              <p className="text-error text-sm mt-1">
+                {errors.destination.message}
+              </p>
+            )}
+          </div>
 
-        <div className="form-control mb-6">
-          <label className="label">
-            Trip Dates
-            <span
-              className="tooltip tooltip-right ml-1"
-              data-tip="Leave both dates empty for a planned trip."
-            >
-              ℹ️
-            </span>
-          </label>
-          {!showDatePicker && (
-            <div className="flex gap-2">
+          {/* Dates */}
+          <div>
+            <label className="label flex justify-between items-center">
+              <span>
+                Trip Dates
+                <span
+                  className="tooltip tooltip-right ml-2"
+                  data-tip="Leave both dates empty for a planned trip."
+                >
+                  <Info className="inline-block w-4 h-4 text-neutral-content" />
+                </span>
+              </span>
+              {tripDuration !== null && (
+                <span className="text-sm text-base-content opacity-80">
+                  {tripDuration} {tripDuration === 1 ? "day" : "days"}
+                </span>
+              )}
+            </label>
+
+            {!showDatePicker && (
               <input
                 type="text"
                 readOnly
@@ -201,49 +222,55 @@ export default function CreateTripModal({
                     ? `${localStartDate} → ${localEndDate}`
                     : "Select date range"
                 }
-                onClick={() => setShowDatePicker(!showDatePicker)}
+                onClick={() => setShowDatePicker(true)}
                 className="input input-bordered w-full cursor-pointer"
               />
-            </div>
-          )}
-          {showDatePicker && (
-            <div className="mt-2 flex gap-2 items-center">
-              <input
-                type="date"
-                className="input input-bordered"
-                value={localStartDate}
-                onChange={(e) => setLocalStartDate(e.target.value)}
-              />
-              <span className="mx-2">to</span>
-              <input
-                type="date"
-                className="input input-bordered"
-                value={localEndDate}
-                onChange={(e) => setLocalEndDate(e.target.value)}
-              />
-              <button
-                type="button"
-                className="btn btn-sm btn-primary"
-                onClick={handleDateSelect}
-              >
-                Set
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-primary"
-                onClick={handleUnpannedDates}
-              >
-                unplanned
-              </button>
-            </div>
-          )}
-          {errors.endDate && (
-            <p className="text-error text-sm mt-1">{errors.endDate.message}</p>
-          )}
+            )}
+
+            {showDatePicker && (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-2">
+                <input
+                  type="date"
+                  className="input input-bordered w-full sm:w-auto"
+                  value={localStartDate}
+                  onChange={(e) => setLocalStartDate(e.target.value)}
+                />
+                <span className="text-center sm:px-2">to</span>
+                <input
+                  type="date"
+                  className="input input-bordered w-full sm:w-auto"
+                  value={localEndDate}
+                  onChange={(e) => setLocalEndDate(e.target.value)}
+                />
+                <div className="flex gap-2 mt-2 sm:mt-0">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary"
+                    onClick={handleDateSelect}
+                  >
+                    Set
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline"
+                    onClick={handleUnpannedDates}
+                  >
+                    Unplanned
+                  </button>
+                </div>
+              </div>
+            )}
+            {errors.endDate && (
+              <p className="text-error text-sm mt-1">
+                {errors.endDate.message}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="modal-action">
-          <button type="button" className="btn" onClick={onClose}>
+        {/* Modal action */}
+        <div className="modal-action mt-6 flex justify-end gap-3">
+          <button type="button" className="btn btn-outline" onClick={onClose}>
             Cancel
           </button>
           <button type="submit" className="btn btn-primary">
