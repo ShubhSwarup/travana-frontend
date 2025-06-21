@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import AuthModal from "./Auth/AuthModal";
+import { AuthMode } from "../types/auth";
+
 
 const HeroSection = () => {
   // List of video paths stored in /public/videos/
-  const videos = [
+  const videos : string[]= [
     "/videos/bg1.mp4",
     "/videos/bg2.mp4",
     "/videos/bg3.mp4",
@@ -17,9 +19,9 @@ const HeroSection = () => {
   }, []);
 
   // Track if the video is fully loaded and ready to play
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [authMode, setAuthMode] = useState("signup"); // or 'login'
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState<boolean>(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("signup");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
 
   // Preload the selected video and update state once it's ready
@@ -31,7 +33,7 @@ const HeroSection = () => {
     };
   }, [randomVideo]);
 
-    const openModal = (mode) => {
+    const openModal = (mode:AuthMode) => {
     setAuthMode(mode);
     setIsModalOpen(true);
   };

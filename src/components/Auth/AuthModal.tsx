@@ -2,14 +2,38 @@
 import { useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { X } from "lucide-react";
-import PropTypes from "prop-types";
-import AuthForm from "./AuthFrom";
+import AuthForm, { LoginFormData, SignupFormData } from "./AuthFrom";
+import { AuthMode } from "../../types/auth";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../app/store";
+import { useNavigate } from "react-router-dom";
+import { loginUser, registerUser } from "../../features/auth/authThunks";
 
-export default function AuthModal({ isOpen, onClose, mode = "login" }) {
-  const [formMode, setFormMode] = useState(mode);
 
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mode?: "login" | "signup";
+}
+
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode = "login" }) => {
+  const [formMode, setFormMode] = useState<AuthMode>(mode);
+ const dispatch = useDispatch<AppDispatch>();
+const navigate = useNavigate();
   const isSignup = formMode === "signup";
-
+  const handleFormSubmit = async (data: any) => {
+    try {
+      if (mode === "login") {
+        await dispatch(loginUser(data)).unwrap();
+      } else {
+        await dispatch(registerUser(data)).unwrap();
+      }
+      navigate("/trips");
+    } catch (err) {
+      console.error("Auth error", err);
+    }
+  };
+  
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
@@ -62,10 +86,7 @@ export default function AuthModal({ isOpen, onClose, mode = "login" }) {
             
             <AuthForm
               mode={formMode}
-              onSubmit={(data) => {
-                console.log("Form submitted", data);
-                // TODO: Call API or handle auth logic here
-              }}
+              onSubmit={handleFormSubmit}
             />
             <div className="text-sm text-center mt-4">
               {isSignup ? (
@@ -97,8 +118,5 @@ export default function AuthModal({ isOpen, onClose, mode = "login" }) {
   );
 }
 
-AuthModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  mode: PropTypes.oneOf(["login", "signup"]),
-};
+export default AuthModal;
+
