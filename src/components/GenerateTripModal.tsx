@@ -23,13 +23,13 @@ export type AIGeneratedTripFormData = z.infer<typeof aiTripSchema>;
 interface GenerateTripModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // onGenerate: (payload: any) => void; // Pass the final payload to parent
+  onGenerate: (payload: any) => void; // Pass the final payload to parent
 }
 
 export default function GenerateTripModal({
   isOpen,
   onClose,
-  // onGenerate,
+  onGenerate,
 }: GenerateTripModalProps) {
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -135,7 +135,7 @@ export default function GenerateTripModal({
     };
 
     console.log(payload);
-    // onGenerate(payload);
+    onGenerate(payload);
     onClose();
   };
 

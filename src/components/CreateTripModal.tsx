@@ -22,11 +22,13 @@ export type TripFormData = z.infer<typeof tripSchema>;
 interface CreateTripModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onGenerate: (payload: any) => void;
 }
 
 export default function CreateTripModal({
   isOpen,
   onClose,
+  onGenerate,
 }: CreateTripModalProps) {
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -79,6 +81,7 @@ export default function CreateTripModal({
     };
 
     console.log("Trip payload:", tripPayload);
+    onGenerate(tripPayload);
     onClose();
   };
 
