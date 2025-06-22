@@ -103,9 +103,11 @@ export default function CreateTripModal({
         <h3 className="font-bold text-xl mb-6 text-center">
           Create a New Trip
         </h3>
-<p className="text-sm text-center text-base-content mt-2 mb-6 px-2 sm:px-6">
-  Manually plan your trip by setting a title, destination, optional description, and travel dates. You can also leave the dates empty for unplanned trips.
-</p>
+        <p className="text-sm text-center text-base-content mt-2 mb-6 px-2 sm:px-6">
+          Manually plan your trip by setting a title, destination, optional
+          description, and travel dates. You can also leave the dates empty for
+          unplanned trips.
+        </p>
         <div className="space-y-4">
           {/* Title */}
           <div>
@@ -151,9 +153,8 @@ export default function CreateTripModal({
             />
             {suggestions.length > 0 && (
               // <ul className="absolute z-10 bg-base-100 border mt-1 rounded-box max-h-48 overflow-y-auto w-full shadow">
-           <ul className="absolute left-0 right-0 z-10 bg-base-100 border mt-1 rounded-box max-h-48 overflow-y-auto shadow">
-
-              {suggestions.map((city, idx) => (
+              <ul className="absolute left-0 right-0 z-10 bg-base-100 border mt-1 rounded-box max-h-48 overflow-y-auto shadow">
+                {suggestions.map((city, idx) => (
                   <li key={idx}>
                     <button
                       type="button"

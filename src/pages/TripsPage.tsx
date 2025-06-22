@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../app/store"; // ✅ Correct types
-import { createTrip, fetchTrips, generateAITrip } from "../features/trips/tripsThunk"; // ✅ Import this
+import {
+  createTrip,
+  fetchTrips,
+  generateAITrip,
+} from "../features/trips/tripsThunk"; // ✅ Import this
 import TopNavBar from "../components/TopNavBar"; // ✅ Import this
 import Lottie from "lottie-react";
 import emptyStateAnimation from "../assets/animations/empty-state.json";
 import CreateTripModal from "../components/CreateTripModal";
-import GenerateTripModal, { AIGeneratedTripFormData } from "../components/GenerateTripModal";
+import GenerateTripModal, {
+  AIGeneratedTripFormData,
+} from "../components/GenerateTripModal";
 import loadingSpinner from "../assets/animations/loading.json";
 
 export default function TripsPage() {
@@ -14,13 +20,11 @@ export default function TripsPage() {
   const { trips, status } = useSelector((state: RootState) => state.trips);
   const hasTrips = trips.length > 0;
   const [isCreateModalOpen, setCreateModalOpen] = useState<boolean>(false);
-   const [isCreateAiModalOpen, setCreateAiModalOpen] = useState<boolean>(false);
+  const [isCreateAiModalOpen, setCreateAiModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(fetchTrips());
   }, [dispatch]);
-
-
 
   // 🧠 Handle AI trip generation
   const handleGenerateTrip = async (formData: AIGeneratedTripFormData) => {
@@ -42,8 +46,7 @@ export default function TripsPage() {
     }
   };
 
-  
-const handleCreateTrip = async (formData: any) => {
+  const handleCreateTrip = async (formData: any) => {
     try {
       // Step 1: Generate trip with AI
       const aiRes = await dispatch(createTrip(formData)).unwrap();
@@ -61,7 +64,7 @@ const handleCreateTrip = async (formData: any) => {
       // Optionally show error toast here
     }
   };
- return (
+  return (
     <div className="min-h-screen bg-base-200">
       <TopNavBar />
 

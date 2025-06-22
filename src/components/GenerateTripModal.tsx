@@ -99,11 +99,11 @@ export default function GenerateTripModal({
   // };
   const [dayRangeError, setDateRangeError] = useState<boolean>(false);
   const [noDateError, setNoDateError] = useState<boolean>(false);
-  
+
   const onSubmit = (data: AIGeneratedTripFormData) => {
     if (!selectedDate?.startDate || !selectedDate?.endDate) {
       // alert("Please select a valid start and end date for your trip.");
-     setNoDateError(true);
+      setNoDateError(true);
       return;
     } else setNoDateError(false);
 
@@ -120,13 +120,13 @@ export default function GenerateTripModal({
     const tripDuration = Math.ceil(
       (new Date(formattedEndDate).getTime() -
         new Date(formattedStartDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24),
     );
 
     if (tripDuration > MAX_DAYS) {
-      setDateRangeError(true)// alert("Trip duration cannot exceed 15 days.");
+      setDateRangeError(true); // alert("Trip duration cannot exceed 15 days.");
       return;
-    } else setDateRangeError(false)
+    } else setDateRangeError(false);
 
     const payload = {
       ...data,
@@ -155,7 +155,7 @@ export default function GenerateTripModal({
     const tripDuration = Math.ceil(
       (new Date(formattedEndDate).getTime() -
         new Date(formattedStartDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24),
     );
 
     if (tripDuration > MAX_DAYS) {
@@ -331,7 +331,7 @@ export default function GenerateTripModal({
             )}
             {dayRangeError && (
               <p className="text-error text-sm mt-1">
-               Trip duration cannot exceed 15 days.
+                Trip duration cannot exceed 15 days.
               </p>
             )}
           </div>

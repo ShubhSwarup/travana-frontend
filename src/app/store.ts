@@ -8,7 +8,7 @@ export const store = configureStore({
     auth: authReducer,
     trips: tripReducer,
     destination: destinationReducer,
-        ui: uiReducer,
+    ui: uiReducer,
   },
 });
 

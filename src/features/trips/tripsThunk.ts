@@ -15,7 +15,7 @@ export const fetchTrips = createAsyncThunk<
     return res.data;
   } catch (err: any) {
     return rejectWithValue(
-      err.response?.data?.message || "Failed to fetch trips"
+      err.response?.data?.message || "Failed to fetch trips",
     );
   } finally {
     dispatch(stopLoading());
@@ -34,7 +34,7 @@ export const generateAITrip = createAsyncThunk<
     return res.data;
   } catch (err: any) {
     return rejectWithValue(
-      err.response?.data?.message || "AI trip generation failed"
+      err.response?.data?.message || "AI trip generation failed",
     );
   } finally {
     dispatch(stopLoading());
@@ -42,20 +42,19 @@ export const generateAITrip = createAsyncThunk<
 });
 
 // 3. Create Trip in DB
-export const createTrip = createAsyncThunk<
-  Trip,
-  Trip,
-  { rejectValue: string }
->("trips/createTrip", async (tripData, { rejectWithValue, dispatch }) => {
-  try {
-    dispatch(startLoading());
-    const res = await api.post("/trips", tripData);
-    return res.data;
-  } catch (err: any) {
-    return rejectWithValue(
-      err.response?.data?.message || "Failed to save trip"
-    );
-  } finally {
-    dispatch(stopLoading());
-  }
-});
+export const createTrip = createAsyncThunk<Trip, Trip, { rejectValue: string }>(
+  "trips/createTrip",
+  async (tripData, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(startLoading());
+      const res = await api.post("/trips", tripData);
+      return res.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to save trip",
+      );
+    } finally {
+      dispatch(stopLoading());
+    }
+  },
+);
