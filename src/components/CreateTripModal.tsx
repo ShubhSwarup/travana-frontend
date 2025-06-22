@@ -85,14 +85,11 @@ export default function CreateTripModal({
     onClose();
   };
 
-  const handleUnplanned = () => {
-    setSelectedDate({ startDate: null, endDate: null });
-  };
 
   return (
     <dialog
       id="create_trip_modal"
-      className={`modal ${isOpen ? "modal-open" : ""}`}
+      className={`modal ${isOpen ? "modal-open" : ""}  backdrop-blur-sm bg-black/30`}
     >
       <form
         method="dialog"

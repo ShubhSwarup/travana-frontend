@@ -120,7 +120,7 @@ export default function GenerateTripModal({
     const tripDuration = Math.ceil(
       (new Date(formattedEndDate).getTime() -
         new Date(formattedStartDate).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (1000 * 60 * 60 * 24),
     );
 
     if (tripDuration > MAX_DAYS) {
@@ -155,7 +155,7 @@ export default function GenerateTripModal({
     const tripDuration = Math.ceil(
       (new Date(formattedEndDate).getTime() -
         new Date(formattedStartDate).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (1000 * 60 * 60 * 24),
     );
 
     if (tripDuration > MAX_DAYS) {
@@ -165,7 +165,7 @@ export default function GenerateTripModal({
   };
 
   return (
-    <dialog className={`modal ${isOpen ? "modal-open" : ""}`}>
+    <dialog className={`modal ${isOpen ? "modal-open" : ""}  backdrop-blur-sm bg-black/30`}>
       <form
         method="dialog"
         className="modal-box w-full max-w-lg sm:max-w-xl mx-auto"

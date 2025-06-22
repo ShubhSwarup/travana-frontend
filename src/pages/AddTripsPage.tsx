@@ -12,7 +12,6 @@ import CreateTripModal from "../components/CreateTripModal";
 import GenerateTripModal, {
   AIGeneratedTripFormData,
 } from "../components/GenerateTripModal";
-import loadingSpinner from "../assets/animations/loading.json";
 import { useNavigate } from "react-router-dom";
 export default function AddTripsPage() {
   const dispatch = useDispatch<AppDispatch>();

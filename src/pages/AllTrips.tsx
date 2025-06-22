@@ -1,31 +1,25 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
-import {
-  createTrip,
-  generateAITrip,
-  fetchTrips,
-} from "../features/trips/tripsThunk";
-import Lottie from "lottie-react";
-import emptyStateAnimation from "../assets/animations/empty-state.json";
-import CreateTripModal from "../components/CreateTripModal";
-import GenerateTripModal, {
-  AIGeneratedTripFormData,
-} from "../components/GenerateTripModal";
-import loadingSpinner from "../assets/animations/loading.json";
+import { fetchTrips } from "../features/trips/tripsThunk";
+import TripTabs from "../components/TripTabs";
 
-const AllTrips = () => {
-  const trips = useSelector((state: RootState) => state.trips.trips);
+export default function AllTripsPage() {
   const dispatch = useDispatch<AppDispatch>();
+  const trips = useSelector((state: RootState) => state.trips.trips);
+
   useEffect(() => {
     if (trips.length === 0) {
       dispatch(fetchTrips());
     }
-    console.log(trips);
   }, [dispatch, trips.length]);
 
-  return <div>AllTrips</div>;
-};
-
-export default AllTrips;
+  return (
+    <div className="min-h-screen bg-base-200 px-4 py-8">
+      <div className="max-w-7xl mx-auto text-center">
+        <h1 className="text-4xl font-bold mb-8 text-primary">All Trips</h1>
+        <TripTabs trips={trips} />
+      </div>
+    </div>
+  );
+}
