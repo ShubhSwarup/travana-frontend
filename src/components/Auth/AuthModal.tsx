@@ -2,12 +2,13 @@
 import { useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { X } from "lucide-react";
-import AuthForm, { LoginFormData, SignupFormData } from "./AuthFrom";
+import AuthForm from "./AuthFrom";
 import { AuthMode } from "../../types/auth";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../app/store";
+import { AppDispatch, store } from "../../app/store";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../../features/auth/authThunks";
+import { fetchTrips } from "../../features/trips/tripsThunk";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,15 +25,30 @@ const AuthModal: React.FC<AuthModalProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const isSignup = formMode === "signup";
+  const [formError, setFormError] = useState("");
+
   const handleFormSubmit = async (data: any) => {
+    setFormError("");
     try {
       if (mode === "login") {
         await dispatch(loginUser(data)).unwrap();
       } else {
         await dispatch(registerUser(data)).unwrap();
       }
-      navigate("/trips");
+
+      // ✅ Now fetch trips
+      await dispatch(fetchTrips()).unwrap();
+      const trips = store.getState().trips.trips; //This avoids calling trips API multiple times and stores it in Redux.
+      // ✅ Navigate based on number of trips
+      if (trips.length === 0) {
+        navigate("/addtrips");
+      } else if (trips.length === 1) {
+        navigate(`/trip/${trips[0]._id}`);
+      } else {
+        navigate("/alltrips");
+      }
     } catch (err) {
+      setFormError("Something went wrong");
       console.error("Auth error", err);
     }
   };
@@ -64,44 +80,24 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 ? "Sign up for a new account"
                 : "Log in to your account"}
             </DialogTitle>
-            {/* <form className="space-y-4">
-              {isSignup && (
-                <input
-                  type="text"
-                  placeholder="Name"
-                  className="input input-bordered w-full"
-                />
-              )}
-              <input
-                type="email"
-                placeholder="Email"
-                className="input input-bordered w-full"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="input input-bordered w-full"
-              />
-              <button className="btn btn-primary w-full">
-                {isSignup ? "Create account" : "Log in"}
-              </button>
-            </form> */}
-
-            <AuthForm mode={formMode} onSubmit={handleFormSubmit} />
+            <AuthForm
+              mode={formMode}
+              onSubmit={handleFormSubmit}
+              formError={formError}
+            />
             <div className="text-sm text-center mt-4">
               {isSignup ? (
                 <>
-                  Already have an account?{" "}
+                  Already have an account?
                   <button
-                    className="link link-primary"
+                    className="link link-primary first-letter:"
                     onClick={() => setFormMode("login")}
                   >
-                    Log in
-                  </button>
+                    Log in</button>
                 </>
               ) : (
                 <>
-                  Don’t have an account?{" "}
+                  Don’t have an account?
                   <button
                     className="link link-primary"
                     onClick={() => setFormMode("signup")}

@@ -1,40 +1,28 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as authAPI from "./authAPI";
+import { createAppThunk } from "../../utils/createAppThunk";
 
-export const loginUser = createAsyncThunk(
-  "auth/login",
-  async (
-    { email, password }: { email: string; password: string },
-    thunkAPI,
-  ) => {
-    try {
-      const token = await authAPI.login(email, password);
-      return token;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message || "Login failed",
-      );
-    }
+// ✅ Login User
+export const loginUser = createAppThunk<
+  string, // Returned type
+  { email: string; password: string } // Argument type
+>({
+  typePrefix: "auth/login",
+  payloadCreator: async ({ email, password }, { rejectWithValue }) => {
+    const token = await authAPI.login(email, password);
+    return token;
   },
-);
+  showErrorPopup: false,
+});
 
-export const registerUser = createAsyncThunk(
-  "auth/register",
-  async (
-    {
-      name,
-      email,
-      password,
-    }: { name: string; email: string; password: string },
-    thunkAPI,
-  ) => {
-    try {
-      const token = await authAPI.register(name, email, password);
-      return token;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message || "Signup failed",
-      );
-    }
+// ✅ Register User
+export const registerUser = createAppThunk<
+  string,
+  { name: string; email: string; password: string }
+>({
+  typePrefix: "auth/register",
+  payloadCreator: async ({ name, email, password }, { rejectWithValue }) => {
+    const token = await authAPI.register(name, email, password);
+    return token;
   },
-);
+  showErrorPopup: false,
+});

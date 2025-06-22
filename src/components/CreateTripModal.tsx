@@ -192,15 +192,6 @@ export default function CreateTripModal({
                 </span>
               </span>
             </label>
-
-            {/* <Datepicker
-              value={selectedDate}
-              onChange={handleDateChange}
-              useRange={true}
-              displayFormat="DD MMM YYYY"
-              inputClassName="input input-bordered w-full"
-              primaryColor="blue"
-            /> */}
             <Datepicker
               placeholder="My Placeholder"
               // inputClassName="w-full rounded-md focus:ring-0 font-normal bg-blue-300 placeholder:text-blue-100 text-white dark:bg-blue-900 dark:placeholder:text-blue-100"

@@ -1,7 +1,12 @@
 // src/features/trips/tripSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import { TripState } from "../../types/trips";
-import { fetchTrips, generateAITrip, createTrip } from "./tripsThunk";
+import {
+  fetchTrips,
+  generateAITrip,
+  createTrip,
+  fetchTripById,
+} from "./tripsThunk";
 
 const initialState: TripState = {
   trips: [],
@@ -55,6 +60,27 @@ const tripSlice = createSlice({
       .addCase(createTrip.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || "Trip creation failed";
+      });
+
+    //getbyId
+    builder
+      .addCase(fetchTripById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTripById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const existingIndex = state.trips.findIndex(
+          (trip) => trip._id === action.payload._id,
+        );
+        if (existingIndex === -1) {
+          state.trips.push(action.payload); // ✅ add if not already present
+        } else {
+          state.trips[existingIndex] = action.payload; // ✅ update if already exists
+        }
+      })
+      .addCase(fetchTripById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = "Trip fetch failed";
       });
   },
 });

@@ -22,8 +22,9 @@ export type SignupFormData = z.infer<typeof signupSchema>;
 interface AuthFormProps {
   mode: AuthMode;
   onSubmit: (data: LoginFormData | SignupFormData) => void;
+  formError?: string;
 }
-const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
+const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit, formError }) => {
   const isSignup = mode === "signup";
 
   const {
@@ -74,7 +75,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
           <p className="text-error text-sm mt-1">{errors.password.message}</p>
         )}
       </div>
-
+      {formError && (
+        <div className="text-error text-sm text-center">{formError}</div>
+      )}
       <button
         type="submit"
         className="btn btn-primary w-full"

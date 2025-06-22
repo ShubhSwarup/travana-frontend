@@ -2,12 +2,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import TripOverview from "./pages/TripOverview";
 import NotFound from "./pages/NotFound";
-import Trips from "./pages/TripsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useSelector } from "react-redux";
 import { RootState } from "./app/store";
 import Lottie from "lottie-react";
 import loadingSpinner from "./assets/animations/loading.json";
+import AppLayout from "./layouts/AppLayout"; // ✅ import layout
+import AddTripsPage from "./pages/AddTripsPage";
+import AllTrips from "./pages/AllTrips";
+import GlobalErrorModal from "./components/GlobalErrorModal";
 
 function App() {
   const loading = useSelector((state: RootState) => state.ui.loading);
@@ -16,26 +19,53 @@ function App() {
     <>
       {/* Global Loading Spinner */}
       {loading && (
-        <div className="fixed inset-0 z-50 bg-base-200/70 flex justify-center items-center">
-          <div className="w-32 h-32">
-            <Lottie animationData={loadingSpinner} loop />
+        <div className="fixed inset-0 z-[9999] bg-base-200/90 backdrop-blur-sm flex flex-col items-center justify-center cursor-wait select-none">
+          <div className="w-28 h-28">
+            <Lottie animationData={loadingSpinner} loop autoplay />
           </div>
+          <p className="mt-4 text-lg text-base-content font-semibold animate-pulse">
+            Loading...
+          </p>
         </div>
       )}
 
       {/* App Routes */}
       <BrowserRouter>
+        <GlobalErrorModal />
+
         <Routes>
+          {/* ❌ No TopNavBar here */}
           <Route path="/" element={<Home />} />
-          <Route
-            path="/trips"
-            element={
-              <ProtectedRoute>
-                <Trips />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/trip/:id" element={<TripOverview />} />
+
+          {/* ✅ Layout with TopNavBar */}
+          <Route element={<AppLayout />}>
+            <Route
+              path="/addtrips"
+              element={
+                <ProtectedRoute>
+                  <AddTripsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alltrips"
+              element={
+                <ProtectedRoute>
+                  <AllTrips />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/trip/:id"
+              element={
+                <ProtectedRoute>
+                  <TripOverview />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
