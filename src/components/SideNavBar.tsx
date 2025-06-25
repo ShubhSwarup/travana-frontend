@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
+
 import {
     LayoutDashboard,
     ListTodo,
@@ -33,6 +36,7 @@ const tripTabs = [
 export default function SideNavBar({ tripId }: { tripId: string }) {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const { name, email, profilePic } = useSelector((state: RootState) => state.user);
 
     const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
     const [collapsed, setCollapsed] = useState(false);
@@ -69,6 +73,22 @@ export default function SideNavBar({ tripId }: { tripId: string }) {
             console.error("Trip creation failed:", error);
         }
     };
+
+    const DefaultAvatar = () => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+        >
+            <circle cx="12" cy="7" r="5" fill="#9ca3af" />
+            <path
+                d="M4 20c0-4 4-6 8-6s8 2 8 6"
+                fill="#9ca3af"
+            />
+        </svg>
+    );
+
 
     const isDark = theme === "dark";
     const renderTabs = (showLabels: boolean) => (
@@ -107,28 +127,34 @@ export default function SideNavBar({ tripId }: { tripId: string }) {
                     </button>
 
                     {/* App Icon/Title */}
-                    <div className="flex items-center mb-6 px-2">
-                        <img src="/logo192.png" className="w-8 h-8 mr-2" alt="Travana Logo" />
-                        {!collapsed && <span className="text-2xl font-extrabold tracking-wide text-primary">Travana</span>}
+                    <div className="flex items-center mb-6">
+                        <img src="/images/logo7.svg" className="w-14 h-14 object-contain rounded-none" alt="Travana Logo" />
+                        {!collapsed &&
+                            <span className="text-3xl font-bold text-primary font-[Raleway]">Travana</span>
+
+                        }
                     </div>
 
                     {/* Avatar */}
                     {!collapsed ? (
-                        <div className="flex items-center space-x-4 mb-10">
+                        <div className="flex items-center space-x-6 mb-10 ml-1">
                             <div className="avatar">
                                 <div className="w-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                    <img src="https://i.pravatar.cc/100?img=32" alt="User" />
+
+                                    <img src={profilePic ? profilePic : "/images/defaultAvatar.png"} alt="User" />
+
                                 </div>
                             </div>
                             <div>
-                                <p className="text-lg font-bold">John Doe</p>
+                                <p className="text-lg font-bold">{name ?? "User"}</p>
                                 <p className="text-sm text-base-content/60">Traveler</p>
                             </div>
                         </div>
                     ) : (
                         <div className="avatar mb-10 flex justify-center">
                             <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                <img src="https://i.pravatar.cc/100?img=32" alt="User" />
+                                <img src={profilePic ? profilePic : "/images/defaultAvatar.png"} alt="User" />
+
                             </div>
                         </div>
                     )}

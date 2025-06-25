@@ -1,0 +1,8 @@
+svg xmlns=httpwww.w3.org2000svg viewBox=0 0 64 64 fill=currentColor class=w-8 h-8
+  rect x=8 y=20 width=48 height=32 rx=4 ry=4
+  path d=M20 20a12 12 0 0 1 24 0 fill=none stroke=currentColor stroke-width=4 stroke-linecap=round
+  path d=M26 20v-6h4v6 fill=currentColor
+  path d=M34 20v-6h4v6 fill=currentColor
+  !-- 'T' shaped handle --
+  path d=M30 8h4v4h2v4h-8v-4h2z fill=currentColor
+svg

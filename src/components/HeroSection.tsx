@@ -64,6 +64,11 @@ const HeroSection = () => {
 
       {/* Overlay content: site title, subtitle, and buttons */}
       <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center px-4">
+        <img
+          src="/images/logo7.svg"
+          alt="Travana Logo"
+          className="w-20 md:w-28"
+        />
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Plan Smarter with Travana
         </h1>

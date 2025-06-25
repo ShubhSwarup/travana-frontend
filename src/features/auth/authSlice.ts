@@ -35,10 +35,11 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload;
+        state.token = action.payload.token;
         state.isAuthenticated = true;
-        localStorage.setItem("token", action.payload);
+        localStorage.setItem("token", action.payload.token);
       })
+
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
@@ -49,9 +50,9 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload;
+        state.token = action.payload.token;
         state.isAuthenticated = true;
-        localStorage.setItem("token", action.payload);
+        localStorage.setItem("token", action.payload.token);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

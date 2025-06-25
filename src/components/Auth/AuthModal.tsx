@@ -90,7 +90,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 <>
                   Already have an account?
                   <button
-                    className="link link-primary first-letter:"
+                    className="ml-2 link link-primary first-letter: ,"
                     onClick={() => setFormMode("login")}
                   >
                     Log in</button>
@@ -99,7 +99,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 <>
                   Don’t have an account?
                   <button
-                    className="link link-primary"
+                    className="ml-2 link link-primary"
                     onClick={() => setFormMode("signup")}
                   >
                     Sign up
