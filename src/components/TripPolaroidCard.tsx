@@ -31,7 +31,7 @@ const TripPolaroidCard = ({ trip }: { trip: Trip }) => {
 
     return (
         <Link
-            to={`/trip/${trip._id}`}
+            to={`/trip/${trip._id}/`}
             className="relative group bg-base-100 shadow-xl rounded-xl overflow-hidden w-full max-w-xs p-4 transition-transform duration-300 transform hover:-translate-y-1 hover:shadow-2xl"
         >
             <div className="w-full aspect-[7/8] rounded-lg overflow-hidden relative">

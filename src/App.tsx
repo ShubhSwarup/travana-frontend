@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import TripOverview from "./pages/TripOverview";
+import TripOverview from "./pages/TripLayout";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useSelector } from "react-redux";
@@ -11,6 +11,13 @@ import AppLayout from "./layouts/AppLayout"; // ✅ import layout
 import AddTripsPage from "./pages/AddTripsPage";
 import AllTrips from "./pages/AllTrips";
 import GlobalErrorModal from "./components/GlobalErrorModal";
+import TripLayout from "./pages/TripLayout";
+import TripActivitiesPage from "./pages/trips/TripActivitiesPage";
+import TripBudgetPage from "./pages/trips/TripBudgetPage";
+import TripChecklistPage from "./pages/trips/TripChecklistPage";
+import TripMapPage from "./pages/trips/TripMapPage";
+import TripOverviewPage from "./pages/trips/TripOverviewPage";
+import TripWishlistPage from "./pages/trips/TripWishlistPage";
 
 function App() {
   const loading = useSelector((state: RootState) => state.ui.loading);
@@ -55,16 +62,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/trip/:id"
-              element={
-                <ProtectedRoute>
-                  <TripOverview />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
 
+          </Route>
+          <Route
+            path="/trip/:id"
+            element={
+              <ProtectedRoute>
+                <TripLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<TripOverviewPage />} />
+            <Route path="activities" element={<TripActivitiesPage />} />
+            <Route path="budget" element={<TripBudgetPage />} />
+            <Route path="checklist" element={<TripChecklistPage />} />
+            <Route path="wishlist" element={<TripWishlistPage />} />
+            <Route path="map" element={<TripMapPage />} />
+          </Route>
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
