@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, registerUser } from "../auth/authThunks";
+import { fetchCurrentUser, loginUser, registerUser } from "../auth/authThunks";
 
 interface UserState {
   isAuthenticated: boolean;
   name: string | null;
   email: string | null;
+  id: string | null;
   profilePic?: string | null;
 }
 
@@ -13,6 +14,7 @@ const initialState: UserState = {
   name: null,
   email: null,
   profilePic: null,
+  id: null,
 };
 
 const userSlice = createSlice({
@@ -41,6 +43,12 @@ const userSlice = createSlice({
         state.email = user.email;
         state.profilePic = user.profilePic || null;
         state.isAuthenticated = true;
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.isAuthenticated = true;
+        state.id = action.payload.id;
+        state.name = action.payload.name;
+        state.email = action.payload.email;
       });
   },
 });

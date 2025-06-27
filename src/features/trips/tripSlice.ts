@@ -6,10 +6,13 @@ import {
   generateAITrip,
   createTrip,
   fetchTripById,
+  fetchTripOverview,
 } from "./tripsThunk";
+import { Trip, TripOverview } from "../../types/trips";
 
 const initialState: TripState = {
   trips: [],
+  selectedTripOverview: null,
   status: "idle",
   error: null,
 };
@@ -31,7 +34,7 @@ const tripSlice = createSlice({
       })
       .addCase(fetchTrips.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload || "Unknown error";
+        state.error = "Unknown error";
       });
 
     // Generate AI Trip
@@ -45,7 +48,7 @@ const tripSlice = createSlice({
       })
       .addCase(generateAITrip.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload || "AI generation failed";
+        state.error = "AI generation failed";
       });
 
     // Create Trip
@@ -59,7 +62,8 @@ const tripSlice = createSlice({
       })
       .addCase(createTrip.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload || "Trip creation failed";
+        console.log("test on error ", action.payload);
+        state.error = "Trip creation failed";
       });
 
     //getbyId
@@ -70,7 +74,7 @@ const tripSlice = createSlice({
       .addCase(fetchTripById.fulfilled, (state, action) => {
         state.status = "succeeded";
         const existingIndex = state.trips.findIndex(
-          (trip) => trip._id === action.payload._id,
+          (trip) => trip._id === action.payload._id
         );
         if (existingIndex === -1) {
           state.trips.push(action.payload); // ✅ add if not already present
@@ -79,6 +83,19 @@ const tripSlice = createSlice({
         }
       })
       .addCase(fetchTripById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = "Trip fetch failed";
+      });
+
+    builder
+      .addCase(fetchTripOverview.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTripOverview.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.selectedTripOverview = action.payload; // ✅ save overview in dedicated state
+      })
+      .addCase(fetchTripOverview.rejected, (state, action) => {
         state.status = "failed";
         state.error = "Trip fetch failed";
       });

@@ -3,8 +3,8 @@ import Home from "./pages/Home";
 import TripOverview from "./pages/TripLayout";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useSelector } from "react-redux";
-import { RootState } from "./app/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./app/store";
 import Lottie from "lottie-react";
 import loadingSpinner from "./assets/animations/loading.json";
 import AppLayout from "./layouts/AppLayout"; // ✅ import layout
@@ -18,10 +18,18 @@ import TripChecklistPage from "./pages/trips/TripChecklistPage";
 import TripMapPage from "./pages/trips/TripMapPage";
 import TripOverviewPage from "./pages/trips/TripOverviewPage";
 import TripWishlistPage from "./pages/trips/TripWishlistPage";
+import { useEffect } from "react";
+import { fetchCurrentUser } from "./features/auth/authThunks";
 
 function App() {
   const loading = useSelector((state: RootState) => state.ui.loading);
-
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      dispatch(fetchCurrentUser());
+    }
+  }, []);
   return (
     <>
       {/* Global Loading Spinner */}

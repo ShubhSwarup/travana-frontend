@@ -1,6 +1,6 @@
 import { createAppThunk } from "../../utils/createAppThunk";
 import api from "../../services/api";
-import { Trip } from "../../types/trips";
+import { Trip, TripOverview } from "../../types/trips";
 
 // 1. Fetch all trips (with loader)
 export const fetchTrips = createAppThunk<Trip[], void>({
@@ -35,6 +35,15 @@ export const fetchTripById = createAppThunk<Trip, string>({
   typePrefix: "trips/fetchTripById",
   payloadCreator: async (id) => {
     const res = await api.get(`/trips/${id}`);
+    return res.data;
+  },
+  showCloseButton: false,
+});
+
+export const fetchTripOverview = createAppThunk<TripOverview, string>({
+  typePrefix: "trips/fetchTripOverView",
+  payloadCreator: async (id) => {
+    const res = await api.get(`/trips/${id}/overview`);
     return res.data;
   },
   showCloseButton: false,

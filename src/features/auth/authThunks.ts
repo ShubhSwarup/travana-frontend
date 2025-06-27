@@ -28,3 +28,14 @@ export const registerUser = createAppThunk<
   },
   showErrorPopup: false,
 });
+
+export const fetchCurrentUser = createAppThunk<
+  { id: string; name: string; email: string },
+  void
+>({
+  typePrefix: "auth/fetchCurrentUser",
+  payloadCreator: async (_, { rejectWithValue }) => {
+    const response = await authAPI.getCurrentUser(); // create this in api file
+    return response;
+  },
+});

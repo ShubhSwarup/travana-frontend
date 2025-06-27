@@ -24,3 +24,12 @@ export const register = async (
   });
   return response.data;
 };
+
+export const getCurrentUser = async (): Promise<{
+  id: string;
+  name: string;
+  email: string;
+}> => {
+  const response = await api.get("/auth/me");
+  return response.data;
+};
