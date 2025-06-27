@@ -4,6 +4,12 @@ import { useParams } from "react-router-dom";
 import { fetchTripOverview } from "../../features/trips/tripsThunk";
 import { Activity } from "../../types/trips";
 import { AppDispatch, RootState } from "../../app/store";
+import HeroSection from "../../components/TripHeroSection";
+import ActivitiesPreview from "../../components/ActivitiesPreview";
+import ActivitiesPreview2 from "../../components/ActivitiesPreview2";
+import ExpensesPreview from "./ExpensesPreview";
+import MapRedirectCard from "./MapRedirectCard";
+// import ActivitiesPreview from "../../components/ActivitiesPreview2";
 
 function TripOverviewPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -23,18 +29,14 @@ function TripOverviewPage() {
 
     return (
         <div className="p-4">
-            <h1 className="text-3xl font-bold mb-2">{overview.trip.title}</h1>
-            <p className="text-gray-600">{overview.trip.destination}</p>
+            <HeroSection trip={overview.trip} />
+            {/* <ActivitiesPreview2 activities={overview.activities} tripId={tripId!} /> */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <ActivitiesPreview activities={overview.activities} tripId={tripId!} />
+                <ExpensesPreview expenses={overview.expenses} tripId={tripId!} />
+                <MapRedirectCard tripId={tripId!} />
 
-            <div className="mt-6">
-                <h2 className="text-xl font-semibold">Activities</h2>
-                <ul className="list-disc list-inside">
-                    {overview.activities.map((a: Activity) => (
-                        <li key={a._id}>
-                            <strong>{a.name}</strong> - {a.description}
-                        </li>
-                    ))}
-                </ul>
+                {/* Add WishlistPreview, ChecklistPreview, etc. here as more come in */}
             </div>
         </div>
     );
