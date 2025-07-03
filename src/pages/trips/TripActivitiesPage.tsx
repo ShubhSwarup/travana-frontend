@@ -159,6 +159,23 @@ const ActivitiesTab = () => {
                     </ul>
                 </div>
             </div>
+            {/* Floating Add Expense Button */}
+            <div className="fixed bottom-6 right-6 z-50">
+                <div className="dropdown dropdown-top dropdown-end">
+                    <label tabIndex={0} className="btn btn-primary btn-circle btn-lg">
+                        <Plus className="w-5 h-5" />
+                    </label>
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40"
+                    >
+                        <li>
+                            <a onClick={() => console.log("Open Add Expense Modal")}>Add Expense</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     );
 };
