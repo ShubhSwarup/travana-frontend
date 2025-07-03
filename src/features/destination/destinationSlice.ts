@@ -1,9 +1,10 @@
 // features/destination/destinationSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchDestinationSuggestions } from "./destinationThunk";
+import { DestinationSuggestion } from "../../types/types";
 
 interface DestinationState {
-  suggestions: string[];
+  suggestions: DestinationSuggestion[];
   loading: boolean;
   error: string | null;
 }
@@ -34,7 +35,7 @@ const destinationSlice = createSlice({
       })
       .addCase(fetchDestinationSuggestions.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Unknown error";
+        state.error = "Failed to fetch destination suggestions";
         state.suggestions = [];
       });
   },

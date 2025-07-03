@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchActivities } from "./activitiesThunk";
 import { Activity } from "../../types/trips";
+import { ActivityFormValues } from "../../components/ActivityFormModal";
 
 interface ActivitiesState {
-  activities: Activity[];
+  activities: ActivityFormValues[];
   loading: boolean;
   error: string | null;
 }

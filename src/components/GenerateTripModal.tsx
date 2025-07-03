@@ -246,13 +246,13 @@ export default function GenerateTripModal({
                         type="button"
                         className="w-full text-left px-4 py-2 hover:bg-base-200"
                         onClick={() => {
-                          setValue("origin", city);
-                          setOriginQuery(city);
+                          setValue("origin", city.display_name);
+                          setOriginQuery(city.display_name);
                           dispatch(clearSuggestions());
                           setSkipOriginNextEffect(true);
                         }}
                       >
-                        {city}
+                        {city.display_name}
                       </button>
                     </li>
                   ))}
@@ -287,13 +287,13 @@ export default function GenerateTripModal({
                         type="button"
                         className="w-full text-left px-4 py-2 hover:bg-base-200"
                         onClick={() => {
-                          setValue("destination", city);
-                          setQuery(city);
+                          setValue("destination", city.display_name);
+                          setQuery(city.display_name);
                           dispatch(clearSuggestions());
                           setSkipNextEffect(true);
                         }}
                       >
-                        {city}
+                        {city.display_name}
                       </button>
                     </li>
                   ))}

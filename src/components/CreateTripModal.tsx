@@ -157,13 +157,13 @@ export default function CreateTripModal({
                       type="button"
                       className="w-full text-left px-4 py-2 hover:bg-base-200"
                       onClick={() => {
-                        setValue("destination", city);
-                        setQuery(city);
+                        setValue("destination", city.display_name);
+                        setQuery(city.display_name);
                         dispatch(clearSuggestions());
                         setSkipNextEffect(true);
                       }}
                     >
-                      {city}
+                      {city.display_name}
                     </button>
                   </li>
                 ))}
