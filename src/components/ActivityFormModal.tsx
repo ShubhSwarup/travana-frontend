@@ -8,8 +8,7 @@ import {
 } from "../features/destination/destinationThunk";
 import { clearSuggestions } from "../features/destination/destinationSlice";
 import { CATEGORY_OPTIONS } from "../utils/constants";
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/airbnb.css"; // Or another theme if you prefer
+
 
 export type ActivityFormValues = {
     _id: string;
@@ -34,12 +33,20 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     initialData?: ActivityFormValues | null;
+    dayMap?: Record<string, Date>;
+    tripStartDate?: string; // ISO string
+    tripEndDate?: string;   // ISO string
 }
 
-export default function ActivityModal({ isOpen, onClose, initialData }: Props) {
+export default function ActivityModal({ isOpen, onClose, initialData, dayMap, tripStartDate, tripEndDate }: Props) {
     const locationRef = useRef<HTMLDivElement>(null);
 
     const [timeValue, setTimeValue] = useState<string>("12:00");
+    const dayTabs = Object.entries(dayMap || {}).sort(([a], [b]) => {
+        const numA = parseInt(a.split(" ")[1]);
+        const numB = parseInt(b.split(" ")[1]);
+        return numA - numB;
+    });
 
     useEffect(() => {
         if (isOpen && initialData) {
@@ -252,6 +259,32 @@ export default function ActivityModal({ isOpen, onClose, initialData }: Props) {
                             <p className="text-error text-sm">{errors.time.message}</p>
                         )}
                     </div> */}
+                    {dayMap && (
+                        <div className="space-x-2 overflow-x-auto pb-2 flex">
+                            {dayTabs.map(([label, date]) => (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    className={`btn btn-sm rounded-full whitespace-nowrap ${dateValue?.startDate?.toDateString() === new Date(date).toDateString()
+                                        ? "btn-primary"
+                                        : "btn-outline"
+                                        }`}
+                                    onClick={() => {
+                                        const selected = new Date(date);
+                                        const [h, m] = timeValue.split(":");
+                                        selected.setHours(+h, +m);
+                                        setDateValue({ startDate: selected, endDate: selected });
+                                        setValue("time", selected.toISOString());
+                                        clearErrors("time");
+                                    }}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+
                     <div>
                         <label className="label">Date & Time</label>
                         <Datepicker
@@ -271,6 +304,8 @@ export default function ActivityModal({ isOpen, onClose, initialData }: Props) {
                             }}
                             useRange={false}
                             asSingle
+                            minDate={tripStartDate ? new Date(tripStartDate) : undefined}
+                            maxDate={tripEndDate ? new Date(tripEndDate) : undefined}
                         />
 
                         <input

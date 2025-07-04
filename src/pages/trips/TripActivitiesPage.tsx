@@ -8,6 +8,7 @@ import { categoryIcons } from "../../utils/iconMapper";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { ACTIVITY_CATEGORIES, ACTIVITY_SORT_OPTIONS } from "../../utils/constants";
 import ActivityFormModal, { ActivityFormValues } from "../../components/ActivityFormModal";
+import { fetchTripOverview } from "../../features/trips/tripsThunk";
 
 const ActivitiesTab = () => {
     const { id: tripId } = useParams();
@@ -21,10 +22,28 @@ const ActivitiesTab = () => {
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [activityToEdit, setActivityToEdit] = useState<ActivityFormValues | null>(null);
+    const overview = useSelector(
+        (state: RootState) => state.trips.selectedTripOverview
+    );
+    useEffect(() => {
+        if (tripId) {
+            dispatch(fetchActivities(tripId));
+        }
+    }, [tripId]);
 
     useEffect(() => {
-        if (tripId) dispatch(fetchActivities(tripId));
-    }, [tripId, dispatch]);
+        if (tripId && !overview) {
+            dispatch(fetchTripOverview(tripId));
+        }
+    }, [tripId, overview]);
+
+    const tripStartDate = overview?.trip?.startDate
+        ? new Date(overview.trip.startDate)
+        : null;
+
+    const tripEndDate = overview?.trip?.endDate
+        ? new Date(overview.trip.endDate)
+        : null;
 
 
 
@@ -33,7 +52,7 @@ const ActivitiesTab = () => {
     const sortedAllActivities = [...activities].sort(
         (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
     );
-    const tripStartDate = sortedAllActivities.length > 0 ? new Date(sortedAllActivities[0].time) : null;
+    // const tripStartDate = sortedAllActivities.length > 0 ? new Date(sortedAllActivities[0].time) : null;
 
     // Filter for upcoming if needed
     const baseActivities = activities.filter((activity) => {
@@ -45,15 +64,45 @@ const ActivitiesTab = () => {
 
     const dayMap: Record<string, typeof activities> = {};
 
-    baseActivities.forEach((activity) => {
-        const activityDate = new Date(activity.time);
-        const dayDiff = tripStartDate
-            ? Math.floor((activityDate.getTime() - tripStartDate.getTime()) / (1000 * 60 * 60 * 24))
-            : 0;
-        const dayLabel = `Day ${dayDiff + 1}`;
-        if (!dayMap[dayLabel]) dayMap[dayLabel] = [];
-        dayMap[dayLabel].push(activity);
-    });
+    if (tripStartDate && tripEndDate) {
+        const totalDays =
+            Math.floor((tripEndDate.getTime() - tripStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+        for (let i = 0; i < totalDays; i++) {
+            const dayLabel = `Day ${i + 1}`;
+            dayMap[dayLabel] = [];
+        }
+
+        baseActivities.forEach((activity) => {
+            const activityDate = new Date(activity.time);
+            const dayDiff = Math.floor(
+                (activityDate.getTime() - tripStartDate.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            const dayLabel = `Day ${dayDiff + 1}`;
+            if (dayMap[dayLabel]) {
+                dayMap[dayLabel].push(activity);
+            }
+        });
+        //  Sort activities inside each day
+        Object.keys(dayMap).forEach((day) => {
+            dayMap[day].sort(
+                (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+            );
+        });
+    }
+
+    const dayDateMap: Record<string, Date> = {};
+    if (overview?.trip?.startDate) {
+        const start = new Date(overview.trip.startDate);
+        Object.keys(dayMap).forEach((label) => {
+            const dayNum = parseInt(label.split(" ")[1]);
+            if (!isNaN(dayNum)) {
+                const date = new Date(start);
+                date.setDate(date.getDate() + (dayNum - 1));
+                dayDateMap[label] = date;
+            }
+        });
+    }
 
     const dayTabs = Object.keys(dayMap).sort((a, b) => {
         const numA = parseInt(a.split(" ")[1]);
@@ -422,6 +471,10 @@ const ActivitiesTab = () => {
                     //  reset();
                 }}
                 initialData={activityToEdit}
+                dayMap={dayDateMap}
+                tripStartDate={overview?.trip?.startDate}
+                tripEndDate={overview?.trip?.endDate}
+
             />
 
 

@@ -22,7 +22,7 @@ function Home() {
         if (fetchedTrips.length === 0) {
           navigate("/addtrips");
         } else if (fetchedTrips.length === 1) {
-          navigate(`/trip/${fetchedTrips[0]._id}`);
+          navigate(`/trip/${fetchedTrips[0]._id}/`);
         } else {
           navigate("/alltrips");
         }

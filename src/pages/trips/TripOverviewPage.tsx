@@ -9,6 +9,7 @@ import ActivitiesPreview from "../../components/ActivitiesPreview";
 import ActivitiesPreview2 from "../../components/ActivitiesPreview2";
 import ExpensesPreview from "./ExpensesPreview";
 import MapRedirectCard from "./MapRedirectCard";
+import { Plus } from "lucide-react";
 // import ActivitiesPreview from "../../components/ActivitiesPreview2";
 
 function TripOverviewPage() {
@@ -23,7 +24,7 @@ function TripOverviewPage() {
         if (tripId) {
             dispatch(fetchTripOverview(tripId));
         }
-    }, [tripId, dispatch]);
+    }, [tripId]);
 
     if (!overview) return null;
 
@@ -39,6 +40,21 @@ function TripOverviewPage() {
                 <MapRedirectCard tripId={tripId!} />
 
                 {/* Add WishlistPreview, ChecklistPreview, etc. here as more come in */}
+            </div>
+            <div className="fixed bottom-6 right-6 z-50">
+                <div className="dropdown dropdown-top dropdown-end">
+                    <label tabIndex={0} className="btn btn-primary btn-circle btn-lg">
+                        <Plus className="w-5 h-5" />
+                    </label>
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40"
+                    >
+                        <li>
+                            <a>Add Expense</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     );

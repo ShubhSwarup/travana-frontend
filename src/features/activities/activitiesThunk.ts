@@ -7,7 +7,6 @@ export const fetchActivities = createAppThunk<ActivityFormValues[], string>({
   typePrefix: "activities/fetchActivities",
   payloadCreator: async (tripId) => {
     const res = await api.get(`/trips/${tripId}/activities`);
-    console.log(res.data);
     return res.data;
   },
   //   showCloseButton: false, // Optional: if you're showing toast notifications
