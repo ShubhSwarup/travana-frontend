@@ -133,10 +133,9 @@ export default function SideNavBar({ tripId, collapsed,
 
                     {/* App Icon/Title */}
                     <div className="flex items-center mb-6">
-                        <img src="/images/logoT1.svg" className="w-16 h-16 object-contain rounded-none" alt="Travana Logo" />
+                        <img src="/images/logoBag.svg" className="w-16 h-16 object-contain rounded-none" alt="Travana Logo" />
                         {!collapsed &&
-                            <span className="text-3xl font-bold text-primary font-[Debata]">Travana</span>
-
+                            <span className="text-4xl font-bold bg-gradient-to-r from-travanaTeal via-travanaYellow to-travanaCoral bg-clip-text text-transparent font-['Clash_Display']">Travana</span>
                         }
                     </div>
 
