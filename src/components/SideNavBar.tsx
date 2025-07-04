@@ -33,13 +33,18 @@ const tripTabs = [
     { label: "Map", path: "map", icon: Map },
 ];
 
-export default function SideNavBar({ tripId }: { tripId: string }) {
+export default function SideNavBar({ tripId, collapsed,
+    setCollapsed,
+}: {
+    tripId: string, collapsed: boolean;
+    setCollapsed: (val: boolean) => void;
+}) {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { name, email, profilePic } = useSelector((state: RootState) => state.user);
 
     const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
-    const [collapsed, setCollapsed] = useState(false);
+    // const [collapsed, setCollapsed] = useState(false);
     const [isCreateModalOpen, setCreateModalOpen] = useState(false);
     const [isCreateAiModalOpen, setCreateAiModalOpen] = useState(false);
 
@@ -128,9 +133,9 @@ export default function SideNavBar({ tripId }: { tripId: string }) {
 
                     {/* App Icon/Title */}
                     <div className="flex items-center mb-6">
-                        <img src="/images/logo7.svg" className="w-14 h-14 object-contain rounded-none" alt="Travana Logo" />
+                        <img src="/images/logoT1.svg" className="w-16 h-16 object-contain rounded-none" alt="Travana Logo" />
                         {!collapsed &&
-                            <span className="text-3xl font-bold text-primary font-[Raleway]">Travana</span>
+                            <span className="text-3xl font-bold text-primary font-[Debata]">Travana</span>
 
                         }
                     </div>
