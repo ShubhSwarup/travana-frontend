@@ -77,9 +77,9 @@ const tripSlice = createSlice({
           (trip) => trip._id === action.payload._id
         );
         if (existingIndex === -1) {
-          state.trips.push(action.payload); // ✅ add if not already present
+          state.trips.push(action.payload); //   add if not already present
         } else {
-          state.trips[existingIndex] = action.payload; // ✅ update if already exists
+          state.trips[existingIndex] = action.payload; //   update if already exists
         }
       })
       .addCase(fetchTripById.rejected, (state, action) => {
@@ -93,7 +93,7 @@ const tripSlice = createSlice({
       })
       .addCase(fetchTripOverview.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.selectedTripOverview = action.payload; // ✅ save overview in dedicated state
+        state.selectedTripOverview = action.payload; //   save overview in dedicated state
       })
       .addCase(fetchTripOverview.rejected, (state, action) => {
         state.status = "failed";

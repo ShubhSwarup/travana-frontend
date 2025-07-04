@@ -3,7 +3,7 @@ import api from "../../services/api"; // destinationThunk.ts
 import { DestinationSuggestion } from "../../types/types";
 
 export const fetchDestinationSuggestions = createAppThunk<
-  DestinationSuggestion[], // ✅ Return full objects
+  DestinationSuggestion[], //   Return full objects
   string // query string
 >({
   typePrefix: "destination/fetchSuggestions",

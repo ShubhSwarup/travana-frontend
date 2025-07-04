@@ -3,7 +3,7 @@ import * as authAPI from "./authAPI";
 import { createAppThunk } from "../../utils/createAppThunk";
 import { AuthResponse } from "../../types/auth";
 
-// ✅ Login User
+//   Login User
 export const loginUser = createAppThunk<
   AuthResponse,
   { email: string; password: string }
@@ -16,7 +16,7 @@ export const loginUser = createAppThunk<
   showErrorPopup: false,
 });
 
-// ✅ Register User
+//   Register User
 export const registerUser = createAppThunk<
   AuthResponse,
   { name: string; email: string; password: string }

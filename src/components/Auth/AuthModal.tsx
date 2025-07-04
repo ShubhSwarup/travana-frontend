@@ -36,10 +36,10 @@ const AuthModal: React.FC<AuthModalProps> = ({
         await dispatch(registerUser(data)).unwrap();
       }
 
-      // ✅ Now fetch trips
+      //   Now fetch trips
       await dispatch(fetchTrips()).unwrap();
       const trips = store.getState().trips.trips; //This avoids calling trips API multiple times and stores it in Redux.
-      // ✅ Navigate based on number of trips
+      //   Navigate based on number of trips
       if (trips.length === 0) {
         navigate("/addtrips");
       } else if (trips.length === 1) {

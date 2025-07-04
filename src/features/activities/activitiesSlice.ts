@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchActivities } from "./activitiesThunk";
+import {
+  createActivity,
+  fetchActivities,
+  updateActivity,
+} from "./activitiesThunk";
 import { Activity } from "../../types/trips";
 import { ActivityFormValues } from "../../components/ActivityFormModal";
 
@@ -32,6 +36,36 @@ const activitiesSlice = createSlice({
       .addCase(fetchActivities.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to load activities";
+      });
+    builder
+      .addCase(createActivity.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createActivity.fulfilled, (state, action) => {
+        state.loading = false;
+        state.activities.push(action.payload); // ✅ append new activity
+      })
+      .addCase(createActivity.rejected, (state) => {
+        state.loading = false;
+        state.error = "Activity creation failed";
+      });
+
+    builder
+      .addCase(updateActivity.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateActivity.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.activities.findIndex(
+          (a) => a._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.activities[index] = action.payload; // update in place
+        }
+      })
+      .addCase(updateActivity.rejected, (state) => {
+        state.loading = false;
+        state.error = "Activity update failed";
       });
   },
 });

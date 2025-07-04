@@ -8,6 +8,8 @@ import {
 } from "../features/destination/destinationThunk";
 import { clearSuggestions } from "../features/destination/destinationSlice";
 import { CATEGORY_OPTIONS } from "../utils/constants";
+import { createActivity, updateActivity } from "../features/activities/activitiesThunk";
+import { useParams } from "react-router-dom";
 
 
 export type ActivityFormValues = {
@@ -40,6 +42,7 @@ interface Props {
 
 export default function ActivityModal({ isOpen, onClose, initialData, dayMap, tripStartDate, tripEndDate }: Props) {
     const locationRef = useRef<HTMLDivElement>(null);
+    const { id: tripId } = useParams();
 
     const [timeValue, setTimeValue] = useState<string>("12:00");
     const dayTabs = Object.entries(dayMap || {}).sort(([a], [b]) => {
@@ -128,7 +131,7 @@ export default function ActivityModal({ isOpen, onClose, initialData, dayMap, tr
     }, [query]);
 
 
-    const onSubmit = (data: ActivityFormValues) => {
+    const onSubmit = async (data: ActivityFormValues) => {
         const payload = {
             ...data,
             time:
@@ -137,7 +140,7 @@ export default function ActivityModal({ isOpen, onClose, initialData, dayMap, tr
                     : "",
         };
 
-        // Expense validation
+        // ✅ Expense validation
         const { title, category, notes, amount } = data.expense || {};
         const hasExpenseFields = title || category || notes;
         if (showExpenseFields && hasExpenseFields && (amount === undefined || isNaN(amount))) {
@@ -145,9 +148,34 @@ export default function ActivityModal({ isOpen, onClose, initialData, dayMap, tr
             return;
         }
 
-        console.log(initialData ? "Edit payload:" : "Create payload:", payload);
-        onClose();
+        try {
+            if (!tripId) throw new Error("no trip id found");
+            console.log('payload', payload.time);
+            if (initialData && initialData._id) {
+                await dispatch(
+                    updateActivity({
+                        tripId,
+                        activityId: initialData._id,
+                        data: payload,
+                    })
+                ).unwrap();
+            } else {
+                // Create Mode
+                await dispatch(
+                    createActivity({
+                        tripId,
+                        data: payload,
+                    })
+                ).unwrap();
+            }
+
+            onClose();
+        } catch (err) {
+            console.error("Activity submission failed:", err);
+            alert("Something went wrong while saving the activity.");
+        }
     };
+
 
 
     return (
@@ -265,10 +293,12 @@ export default function ActivityModal({ isOpen, onClose, initialData, dayMap, tr
                                 <button
                                     key={label}
                                     type="button"
-                                    className={`btn btn-sm rounded-full whitespace-nowrap ${dateValue?.startDate?.toDateString() === new Date(date).toDateString()
-                                        ? "btn-primary"
-                                        : "btn-outline"
+                                    className={`transition-all duration-200 px-4 py-1.5 text-sm font-medium rounded-full border whitespace-nowrap
+  ${dateValue?.startDate?.toDateString() === new Date(date).toDateString()
+                                            ? "bg-primary text-primary-content border-primary shadow-sm"
+                                            : "bg-base-200 text-base-content hover:bg-primary/10 hover:border-primary/30 border-base-300"
                                         }`}
+
                                     onClick={() => {
                                         const selected = new Date(date);
                                         const [h, m] = timeValue.split(":");

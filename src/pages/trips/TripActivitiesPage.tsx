@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, MapPin, Plus, Pencil } from "lucide-react";
+import { CalendarDays, MapPin, Plus, Pencil, SlidersHorizontal, List, LayoutGrid, Rows, CheckCircle, Wallet, Clock, Tag } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
@@ -22,9 +22,9 @@ const ActivitiesTab = () => {
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [activityToEdit, setActivityToEdit] = useState<ActivityFormValues | null>(null);
-    const overview = useSelector(
-        (state: RootState) => state.trips.selectedTripOverview
-    );
+    const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+    const overview = useSelector((state: RootState) => state.trips.selectedTripOverview);
+
     useEffect(() => {
         if (tripId) {
             dispatch(fetchActivities(tripId));
@@ -37,15 +37,8 @@ const ActivitiesTab = () => {
         }
     }, [tripId, overview]);
 
-    const tripStartDate = overview?.trip?.startDate
-        ? new Date(overview.trip.startDate)
-        : null;
-
-    const tripEndDate = overview?.trip?.endDate
-        ? new Date(overview.trip.endDate)
-        : null;
-
-
+    const tripStartDate = overview?.trip?.startDate ? new Date(overview.trip.startDate) : null;
+    const tripEndDate = overview?.trip?.endDate ? new Date(overview.trip.endDate) : null;
 
     const now = new Date().getTime();
 
@@ -64,26 +57,22 @@ const ActivitiesTab = () => {
 
     const dayMap: Record<string, typeof activities> = {};
 
-    if (tripStartDate && tripEndDate) {
-        const totalDays =
-            Math.floor((tripEndDate.getTime() - tripStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-
-        for (let i = 0; i < totalDays; i++) {
-            const dayLabel = `Day ${i + 1}`;
-            dayMap[dayLabel] = [];
-        }
-
+    if (tripStartDate) {
         baseActivities.forEach((activity) => {
             const activityDate = new Date(activity.time);
             const dayDiff = Math.floor(
                 (activityDate.getTime() - tripStartDate.getTime()) / (1000 * 60 * 60 * 24)
             );
             const dayLabel = `Day ${dayDiff + 1}`;
-            if (dayMap[dayLabel]) {
-                dayMap[dayLabel].push(activity);
+
+            if (!dayMap[dayLabel]) {
+                dayMap[dayLabel] = [];
             }
+
+            dayMap[dayLabel].push(activity);
         });
-        //  Sort activities inside each day
+
+        // Sort activities within each day
         Object.keys(dayMap).forEach((day) => {
             dayMap[day].sort(
                 (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
@@ -92,6 +81,17 @@ const ActivitiesTab = () => {
     }
 
     const dayDateMap: Record<string, Date> = {};
+    if (tripStartDate) {
+        Object.keys(dayMap).forEach((label) => {
+            const dayNum = parseInt(label.split(" ")[1]);
+            if (!isNaN(dayNum)) {
+                const date = new Date(tripStartDate);
+                date.setDate(date.getDate() + (dayNum - 1));
+                dayDateMap[label] = date;
+            }
+        });
+    }
+
     if (overview?.trip?.startDate) {
         const start = new Date(overview.trip.startDate);
         Object.keys(dayMap).forEach((label) => {
@@ -207,277 +207,320 @@ const ActivitiesTab = () => {
     if (!hasStay) suggestions.push("Don’t forget to add your stay/hotel info!");
     if (activities.length < 3) suggestions.push("Plan more activities to make the most of your trip!");
 
-
     return (
-        <div className="p-4 max-w-screen-xl mx-auto lg:h-[calc(100vh-4rem)]">
-            <div className="flex flex-col lg:grid lg:grid-cols-[220px_1fr_240px] gap-6 lg:h-full">
+        // <div className="max-w-screen-2xl mx-auto p-4">
+        <div className="max-w-screen-2xl mx-auto p-4 h-[calc(100vh-4rem)]">
 
-                {/* Left Sidebar */}
-                <aside className="space-y-4 w-full lg:w-auto">
-                    <div className="text-sm font-medium">Filters</div>
-                    <select
-                        className="select select-sm w-full"
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                        {ACTIVITY_CATEGORIES.map((cat) => (
-                            <option key={cat} value={cat}>
-                                {cat}
-                            </option>
-                        ))}
-                    </select>
+            <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6 lg:h-[calc(100vh-4rem)]">
+                {!isMobile && (
+                    <aside className="space-y-6">
+                        <div className="bg-base-100 p-4 rounded-xl shadow">
+                            <details className="lg:open">
+                                <summary className="font-semibold text-sm uppercase cursor-pointer text-gray-500">Filters</summary>
+                                <div className="space-y-3 mt-3">
+                                    <select className="select select-sm w-full" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+                                        {ACTIVITY_CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+                                    </select>
+                                    <select className="select select-sm w-full" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                                        {ACTIVITY_SORT_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                    </select>
+                                    <label className="label cursor-pointer justify-start gap-2">
+                                        <input type="checkbox" className="checkbox checkbox-primary" checked={upcomingOnly} onChange={(e) => setUpcomingOnly(e.target.checked)} />
+                                        <span className="label-text text-sm">Upcoming Only</span>
+                                    </label>
+                                </div>
+                            </details>
+                        </div>
 
-                    <select
-                        className="select select-sm w-full"
-                        value={sortOption}
-                        onChange={(e) => setSortOption(e.target.value)}
-                    >
-                        {ACTIVITY_SORT_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </option>
-                        ))}
-                    </select>
+                        <div className="bg-base-100 p-4 rounded-xl shadow">
+                            <details className="lg:open">
+                                <summary className="font-semibold text-sm uppercase cursor-pointer text-gray-500">Suggestions</summary>
+                                <div className="mt-2">
+                                    {suggestions.length > 0 ? <ul className="list-disc ml-4 space-y-1 text-sm">{suggestions.map((tip, i) => <li key={i}>{tip}</li>)}</ul> : <p className="text-sm text-gray-500 flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4 text-success" /> All set for now!
+                                    </p>
+                                    }
+                                </div>
+                            </details>
+                        </div>
 
-                    <div className="form-control">
-                        <label className="label cursor-pointer justify-start gap-2">
-                            <input
-                                type="checkbox"
-                                className="checkbox checkbox-primary"
-                                checked={upcomingOnly}
-                                onChange={(e) => setUpcomingOnly(e.target.checked)}
-                            />
-                            <span className="label-text">Upcoming Only</span>
-                        </label>
+                        <div className="bg-base-100 p-4 rounded-xl shadow">
+                            <h3 className="font-semibold mb-2">Quick Summary</h3>
+                            <p className="text-sm mb-1 flex items-center gap-2">
+                                <Wallet className="w-4 h-4 text-primary" /> Spending today: ₹{todayExpense.toLocaleString()}
+                            </p>
+                            <p className="text-sm flex items-center gap-2">
+                                {nextActivity ? (
+                                    <>
+                                        <Clock className="w-4 h-4 text-primary" /> Next activity in {timeUntilNext}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Clock className="w-4 h-4 text-primary" /> No upcoming activity
+                                    </>
+                                )}
+                            </p>
+
+                        </div>
+                    </aside>
+                )}
+
+                {/* <main className="flex flex-col gap-4 w-full relative"> */}
+                <main className="flex flex-col gap-4 w-full relative h-full overflow-hidden">
+
+                    <div className="sticky top-0 z-10 bg-base-100 pt-3 pb-4 border-b overflow-x-auto scrollbar-hide">
+                        <div className="flex gap-2 w-max px-2">
+                            {dayTabs.map((day) => {
+                                const isActive = selectedDay === day;
+                                return (
+                                    <button
+                                        key={day}
+                                        onClick={() => setSelectedDay(isActive ? null : day)}
+                                        className={`transition-all duration-200 px-4 py-1.5 text-sm font-medium rounded-full border 
+            ${isActive
+                                                ? "bg-primary text-primary-content border-primary shadow-sm"
+                                                : "bg-base-200 text-base-content hover:bg-primary/10 hover:border-primary/30 border-base-300"
+                                            }`}
+                                    >
+                                        {day}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
 
-                </aside>
 
-                {/* Center Activities Section */}
-                <main className="flex flex-col space-y-4 lg:overflow-hidden w-full">
-                    {/* View Toggle */}
-                    <div className="flex gap-2">
-                        {['list', 'card', 'accordion'].map((v) => (
-                            <button
-                                key={v}
-                                className={`btn btn-sm btn-outline ${view === v ? 'btn-primary' : ''}`}
-                                onClick={() => setView(v as typeof view)}
-                            >
-                                {v === 'list' ? '📋 List' : v === 'card' ? '📦 Card' : '🪄 Accordion'}
-                            </button>
-                        ))}
+                    <div className="flex justify-between items-center flex-wrap gap-2">
+                        <div className="flex gap-2">
+                            {["list", "card", "accordion"].map((v) => (
+                                <button key={v} className={`btn btn-sm flex items-center gap-1 ${view === v ? "btn-primary" : "btn-outline"}`} onClick={() => setView(v as typeof view)}>
+                                    {v === "list" && <List className="w-4 h-4" />}
+                                    {v === "card" && <LayoutGrid className="w-4 h-4" />}
+                                    {v === "accordion" && <Rows className="w-4 h-4" />}
+                                    <span className="capitalize">{v}</span>
+                                </button>
+                            ))}
+                        </div>
+                        {!isMobile && (
+                            <button onClick={() => setIsModalOpen(true)} className="btn btn-sm btn-primary"><Plus className="w-4 h-4 mr-1" /> Add Activity</button>
+                        )}
                     </div>
 
-                    {/* Sticky Day Tabs */}
-                    <div className="overflow-x-auto flex gap-2 pb-2 border-b">
-                        {dayTabs.map((day) => (
-                            <button
-                                key={day}
-                                className={`btn btn-xs rounded-full ${selectedDay === day ? "btn-primary" : "btn-outline"}`}
-                                onClick={() => setSelectedDay(selectedDay === day ? null : day)} // toggle logic
-                            >
-                                {day}
-                            </button>
-                        ))}
+                    {/* <div className="flex-1 overflow-y-auto min-h-[200px]"> */}
 
-                    </div>
 
-                    {/* Activities Content */}
-                    <div className="lg:overflow-y-auto lg:pr-2 lg:flex-1">
+
+                    <div className="flex-1 overflow-y-auto min-h-0 pr-2">
+
+
+
                         {view === 'list' && (
-                            <ul className="space-y-3">
+                            <ul className="space-y-4">
                                 {filteredActivities.map((activity) => {
-                                    const Icon = categoryIcons[activity.category] || categoryIcons["location"];
+                                    const Icon = categoryIcons[activity.category] || MapPin;
                                     return (
-                                        <li key={activity._id} className="...">
-                                            <div className="flex gap-3 items-start w-full">
-                                                <div className="bg-primary/10 p-2 rounded-full">{Icon()}</div>
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="font-semibold text-base truncate">{activity.name}</h3>
-                                                    <p className="text-sm text-gray-500 flex items-center gap-1 truncate">
-                                                        <MapPin className="w-4 h-4" /> {activity.location}
-                                                    </p>
+                                        <li
+                                            key={activity._id}
+                                            className="flex items-start gap-4 bg-base-100 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                                        >
+                                            <div className="shrink-0">
+                                                <div className="bg-primary/10 text-primary p-3 rounded-full">
+                                                    <Icon className="w-5 h-5 text-primary" />
                                                 </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setActivityToEdit(activity);
-                                                        setIsModalOpen(true);
-                                                    }}
-                                                    className="btn btn-sm btn-ghost text-primary hover:bg-base-200"
-                                                    title="Edit Activity"
-                                                >
-                                                    <Pencil className="w-4 h-4" />
-                                                </button>
                                             </div>
-                                            <p className="text-xs text-gray-400 flex items-center gap-1 sm:whitespace-nowrap">
-                                                <CalendarDays className="w-4 h-4" />
-                                                {new Date(activity.time).toLocaleDateString()}
-                                            </p>
-                                        </li>
 
+                                            <div className="flex-1 space-y-1 min-w-0">
+                                                <div className="flex justify-between items-center">
+                                                    <h3 className="font-semibold text-base text-base-content truncate">{activity.name}</h3>
+                                                    <button
+                                                        onClick={() => {
+                                                            setActivityToEdit(activity);
+                                                            setIsModalOpen(true);
+                                                        }}
+                                                        className="btn btn-xs btn-ghost text-primary hover:bg-base-200"
+                                                        title="Edit"
+                                                    >
+                                                        <Pencil className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                                <div className="text-sm text-neutral-content/80 flex flex-wrap items-center gap-2">
+                                                    <MapPin className="w-4 h-4" />
+                                                    <span className="truncate">{activity.location}</span>
+                                                    <span className="text-gray-500">|</span>
+                                                    <CalendarDays className="w-4 h-4" />
+                                                    <span>{new Date(activity.time).toLocaleDateString()}</span>
+                                                    <span className="ml-auto badge badge-sm badge-outline">{activity.category}</span>
+                                                </div>
+                                            </div>
+                                        </li>
                                     );
                                 })}
                             </ul>
                         )}
 
-                        {view === 'card' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {filteredActivities.map((activity) => (
-                                    <div
-                                        key={activity._id}
-                                        className="card bg-base-100 p-4 shadow rounded-xl relative"
-                                    >
-                                        {/* ✏️ Edit Icon Top Right */}
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setActivityToEdit(activity);
-                                                setIsModalOpen(true);
-                                            }}
-                                            className="absolute top-2 right-2 btn btn-xs btn-ghost text-primary hover:bg-base-200"
-                                            title="Edit Activity"
-                                        >
-                                            <Pencil className="w-4 h-4" />
-                                        </button>
 
-                                        <h3 className="font-semibold text-lg mb-1">{activity.name}</h3>
-                                        <p className="text-sm text-gray-600 mb-1">
-                                            <CalendarDays className="w-4 h-4 inline" />{" "}
-                                            {new Date(activity.time).toLocaleDateString()}
-                                        </p>
-                                        <p className="text-sm text-gray-600 mb-2">
-                                            <MapPin className="w-4 h-4 inline" /> {activity.location}
-                                        </p>
-                                        <div className="badge badge-primary">{activity.category}</div>
-                                    </div>
-                                ))}
+
+                        {view === 'card' && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredActivities.map((activity) => {
+                                    const Icon = categoryIcons[activity.category] || categoryIcons["location"];
+                                    return (
+                                        <div
+                                            key={activity._id}
+                                            className="relative card bg-base-100 shadow-sm hover:shadow-md transition-shadow p-4 rounded-xl"
+                                        >
+                                            {/* Fix: add padding to avoid overlap */}
+                                            <div className="pr-10">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className="bg-primary/10 text-primary p-2 rounded-full">
+                                                        <Icon className="w-5 h-5 text-primary" />
+                                                    </div>
+                                                    <h3 className="font-semibold text-lg text-base-content truncate">
+                                                        {activity.name}
+                                                    </h3>
+                                                </div>
+
+                                                <p className="text-sm text-neutral-content/80 flex items-center gap-2 mb-1">
+                                                    <CalendarDays className="w-4 h-4" />{" "}
+                                                    {new Date(activity.time).toLocaleDateString()}
+                                                </p>
+                                                <p className="text-sm text-neutral-content/80 flex items-center gap-2 mb-2">
+                                                    <MapPin className="w-4 h-4" /> {activity.location}
+                                                </p>
+                                                <div className="badge badge-outline badge-primary">{activity.category}</div>
+                                            </div>
+
+                                            {/* Positioned absolutely with spacing */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setActivityToEdit(activity);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="absolute top-3 right-3 btn btn-xs btn-ghost text-primary hover:bg-base-200"
+                                                title="Edit"
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
 
 
                         {view === 'accordion' && (
-                            <div className="space-y-2">
-                                {filteredActivities.map((activity) => (
-                                    <div key={activity._id} className="collapse collapse-arrow bg-base-100 shadow rounded-box">
-                                        <input type="checkbox" className="peer" />
-
-                                        {/* Collapse Title */}
-                                        <div className="collapse-title peer-checked:bg-base-200 flex justify-between items-center">
-                                            <span>{activity.name}</span>
-
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm text-gray-500">
-                                                    {new Date(activity.time).toLocaleTimeString()}
-                                                </span>
-
-                                                {/* Prevent edit button click from toggling accordion */}
+                            <div className="space-y-3">
+                                {filteredActivities.map((activity) => {
+                                    const Icon = categoryIcons[activity.category] || categoryIcons["location"];
+                                    return (
+                                        <div
+                                            key={activity._id}
+                                            className="collapse collapse-arrow bg-base-100 rounded-box shadow-sm hover:shadow-md transition-shadow"
+                                        >
+                                            <input type="checkbox" className="peer" />
+                                            <div className="collapse-title peer-checked:bg-base-200 flex justify-between items-center">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-primary/10 text-primary p-2 rounded-full">
+                                                        <Icon className="w-5 h-5 text-primary" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <h4 className="font-semibold text-base-content text-sm sm:text-base">{activity.name}</h4>
+                                                        <span className="text-xs text-neutral-content/70">
+                                                            {new Date(activity.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                                 <button
                                                     type="button"
                                                     onClick={(e) => {
-                                                        e.preventDefault(); // <--- important
-                                                        e.stopPropagation(); // <--- required to prevent toggle
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
                                                         setActivityToEdit(activity);
                                                         setIsModalOpen(true);
                                                     }}
-                                                    className="btn btn-xs btn-ghost hover:bg-base-200"
+                                                    className="btn btn-xs btn-ghost text-primary hover:bg-base-200"
                                                     title="Edit"
                                                 >
                                                     <Pencil className="w-4 h-4" />
                                                 </button>
                                             </div>
-                                        </div>
 
-                                        {/* Collapse Content */}
-                                        <div className="collapse-content text-sm text-gray-500 peer-checked:pb-4">
-                                            <p>📍 {activity.location}</p>
-                                            <p>📌 Category: {activity.category}</p>
-                                        </div>
-                                    </div>
+                                            <div className="collapse-content text-sm text-neutral-content/80 space-y-2 peer-checked:pb-4">
+                                                <p><MapPin className="inline w-4 h-4 mr-1" /> {activity.location}</p>
+                                                <p><CalendarDays className="inline w-4 h-4 mr-1" /> {new Date(activity.time).toLocaleDateString()}</p>
+                                                <p className="flex items-center gap-2">
+                                                    <Tag className="w-4 h-4 text-primary" />
+                                                    <span>Category: </span>
+                                                    <span className="badge badge-outline badge-sm">{activity.category}</span>
+                                                </p>
 
-                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-
                         )}
 
 
+
+
+
+
+
+                        {/* <p className="text-center text-gray-400 text-sm py-10">Rendered activity list will show here (based on view).</p> */}
                     </div>
                 </main>
+            </div>
 
-                {/* Right Sidebar */}
-                <aside className="space-y-4 w-full lg:w-auto">
-                    <div className="bg-base-100 p-4 rounded-xl shadow">
-                        <h3 className="font-semibold mb-2">Quick Summary</h3>
-                        <p className="text-sm">
-                            You're spending ₹{todayExpense.toLocaleString()} today.
-                        </p>
-                        <p className="text-sm">
-                            {nextActivity
-                                ? `Next activity in ${timeUntilNext}.`
-                                : "No upcoming activity."}
-                        </p>
+            {/* Floating Button (Mobile only) */}
+            {isMobile && (
+                <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+                    <button onClick={() => setIsFilterSheetOpen(true)} className="btn btn-sm btn-circle btn-outline"><SlidersHorizontal className="w-4 h-4" /></button>
+                    <button onClick={() => setIsModalOpen(true)} className="btn btn-primary btn-circle btn-lg shadow-lg"><Plus className="w-5 h-5" /></button>
+                </div>
+            )}
 
-                    </div>
-                    <div className="bg-base-100 p-4 rounded-xl shadow">
-                        <h3 className="font-semibold mb-2">Suggestions</h3>
-                        {suggestions.length > 0 ? (
-                            <ul className="list-disc ml-4 space-y-1 text-sm">
-                                {suggestions.map((tip, i) => (
-                                    <li key={i}>{tip}</li>
-                                ))}
+            {isMobile && isFilterSheetOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur z-50 flex items-end">
+                    <div className="bg-base-100 w-full rounded-t-xl p-4 space-y-4 max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-bold">Filters & Summary</h3>
+                            <button className="btn btn-sm btn-outline" onClick={() => setIsFilterSheetOpen(false)}>Close</button>
+                        </div>
+                        <div className="space-y-3">
+                            <select className="select select-sm w-full" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+                                {ACTIVITY_CATEGORIES.map((cat) => <option key={cat}>{cat}</option>)}
+                            </select>
+                            <select className="select select-sm w-full" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                                {ACTIVITY_SORT_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                            </select>
+                            <label className="label cursor-pointer gap-2">
+                                <input type="checkbox" className="checkbox checkbox-primary" checked={upcomingOnly} onChange={(e) => setUpcomingOnly(e.target.checked)} />
+                                <span className="label-text">Upcoming Only</span>
+                            </label>
+                            <div className="divider">Summary</div>
+                            <p className="text-sm">Today's Spending: ₹{todayExpense.toLocaleString()}</p>
+                            <p className="text-sm">{nextActivity ? `Next in ${timeUntilNext}` : "No upcoming activity."}</p>
+                            <ul className="list-disc ml-4 text-sm space-y-1">
+                                {suggestions.map((s, i) => <li key={i}>{s}</li>)}
                             </ul>
-                        ) : (
-                            <p className="text-sm text-gray-500">All set for now! 🎉</p>
-                        )}
-
+                        </div>
                     </div>
-                </aside>
-            </div>
-
-            {/* Floating Add Button */}
-            <div className="fixed bottom-6 right-6 z-50">
-                <div className="dropdown dropdown-top dropdown-end">
-                    <label tabIndex={0} className="btn btn-primary btn-circle btn-lg">
-                        <Plus className="w-5 h-5" />
-                    </label>
-                    <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
-                        <li><a>Add Activity</a></li>
-                        <li><a>Add Expense</a></li>
-                    </ul>
                 </div>
-            </div>
-            {/* Floating Add Expense Button */}
-            <div className="fixed bottom-6 right-6 z-50">
-                <div className="dropdown dropdown-top dropdown-end">
-                    <label tabIndex={0} className="btn btn-primary btn-circle btn-lg">
-                        <Plus className="w-5 h-5" />
-                    </label>
-                    <ul
-                        tabIndex={0}
-                        className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40"
-                    >
-                        <li>
-                            <a onClick={() => setIsModalOpen(true)}>Add Expense</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            )}
 
             <ActivityFormModal
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);
                     setActivityToEdit(null);
-                    //  reset();
                 }}
                 initialData={activityToEdit}
                 dayMap={dayDateMap}
                 tripStartDate={overview?.trip?.startDate}
                 tripEndDate={overview?.trip?.endDate}
-
             />
-
-
         </div>
     );
 };

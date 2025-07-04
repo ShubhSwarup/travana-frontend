@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "./app/store";
 import Lottie from "lottie-react";
 import loadingSpinner from "./assets/animations/loading.json";
-import AppLayout from "./layouts/AppLayout"; // ✅ import layout
+import AppLayout from "./layouts/AppLayout"; //   import layout
 import AddTripsPage from "./pages/AddTripsPage";
 import AllTrips from "./pages/AllTrips";
 import GlobalErrorModal from "./components/GlobalErrorModal";
@@ -52,7 +52,7 @@ function App() {
           {/* ❌ No TopNavBar here */}
           <Route path="/" element={<Home />} />
 
-          {/* ✅ Layout with TopNavBar */}
+          {/*   Layout with TopNavBar */}
           <Route element={<AppLayout />}>
             <Route
               path="/addtrips"

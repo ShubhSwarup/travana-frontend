@@ -10,7 +10,7 @@ import { Info } from "lucide-react";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import { format } from "date-fns";
 
-// ✅ No validation for dates now
+//   No validation for dates now
 const tripSchema = z.object({
   title: z.string().min(3, "Title too short").max(50),
   description: z.string().max(300).optional(),

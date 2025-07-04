@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
 });
 
-// ✅ Add request interceptor to attach token from localStorage
+//   Add request interceptor to attach token from localStorage
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -20,7 +20,7 @@ api.interceptors.request.use(
   }
 );
 
-// ✅ Catch 401 Unauthorized globally
+//   Catch 401 Unauthorized globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {

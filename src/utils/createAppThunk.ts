@@ -21,13 +21,13 @@ export function createAppThunk<Returned, ThunkArg = void>({
 }) {
   return createAsyncThunk<Returned, ThunkArg>(
     typePrefix,
-    // ✅ Don't make this an `async` function
+    //   Don't make this an `async` function
     (arg, thunkAPI) => {
       const { dispatch } = thunkAPI;
 
       if (showLoading) dispatch(startLoading());
 
-      // ✅ Always return a `Promise<Returned | RejectWithValue<...>>`
+      //   Always return a `Promise<Returned | RejectWithValue<...>>`
       return Promise.resolve(payloadCreator(arg, thunkAPI))
         .catch((err: any) => {
           const message =
@@ -44,6 +44,6 @@ export function createAppThunk<Returned, ThunkArg = void>({
         .finally(() => {
           if (showLoading) dispatch(stopLoading());
         });
-    },
+    }
   );
 }
