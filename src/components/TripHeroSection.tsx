@@ -3,6 +3,8 @@ import { UploadCloud } from "lucide-react";
 import { Button } from "@headlessui/react";
 import { fetchCityImage } from "../services/unsplash";
 import { Trip } from "../types/trips"; // Assuming this includes _id, title, destination, etc.
+import UpdateTripModal from "./UpdateTripModal";
+import { Pencil } from "lucide-react"; // ⬅️ Add this for the edit icon
 
 type HeroSectionProps = {
     trip: Trip;
@@ -10,7 +12,7 @@ type HeroSectionProps = {
 
 function HeroSection({ trip }: HeroSectionProps) {
     const [image, setImage] = useState<string>("");
-
+    const [showEditModal, setShowEditModal] = useState(false);
     useEffect(() => {
         const loadImage = async () => {
             const city = trip.destination || "travel";
@@ -41,6 +43,18 @@ function HeroSection({ trip }: HeroSectionProps) {
             )}
 
             <div className="absolute top-0 left-0 w-full h-full bg-black/40 p-6 flex flex-col justify-end">
+                <div
+                    className="tooltip tooltip-left absolute top-4 right-4"
+                    data-tip="Edit Trip"
+                >
+                    <button
+                        onClick={() => setShowEditModal(true)}
+                        className="btn btn-sm btn-circle btn-ghost hover:bg-white/10"
+                    >
+                        <Pencil className="w-4 h-4 text-white" />
+                    </button>
+                </div>
+
                 <h1 className="text-3xl font-bold text-white mb-1">{title}</h1>
                 <p className="text-lg text-white/80 italic">{destination}</p>
                 <p className="text-sm text-white/70 mb-1">{formattedDates}</p>
@@ -58,6 +72,8 @@ function HeroSection({ trip }: HeroSectionProps) {
                     </button>
                 )}
             </div>
+
+            <UpdateTripModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} trip={trip} />
         </div>
     );
 }

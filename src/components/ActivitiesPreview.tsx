@@ -37,14 +37,14 @@ function ActivitiesPreview({ activities, tripId }: Props) {
             {isMobile ? (
                 <div className="grid grid-cols-2 gap-3">
                     {activities.map((activity) => {
-                        const Icon = categoryIcons[activity.category] || categoryIcons["location"];
+                        const Icon = categoryIcons[activity.category] || MapPin;
                         return (
                             <div
                                 key={activity._id}
                                 className="flex flex-col items-center text-center px-2"
                             >
                                 <div className="tooltip tooltip-bottom" data-tip={activity.name}>
-                                    <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto">{Icon()}</div>
+                                    <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto"><Icon className="w-5 h-5 text-primary" /></div>
                                 </div>
                                 <p className="text-sm mt-1 w-full line-clamp-2">{activity.name}</p>
                             </div>
@@ -55,7 +55,7 @@ function ActivitiesPreview({ activities, tripId }: Props) {
                 // Desktop view
                 <ul className="flex flex-col gap-3">
                     {activities.map((activity) => {
-                        const Icon = categoryIcons[activity.category] || categoryIcons["location"];
+                        const Icon = categoryIcons[activity.category] || MapPin;
                         return (
                             <li
                                 key={activity._id}
@@ -63,7 +63,7 @@ function ActivitiesPreview({ activities, tripId }: Props) {
                             >
                                 {/* Left Part */}
                                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                                    <div className="bg-primary/10 p-2 rounded-full shrink-0">{Icon()}</div>
+                                    <div className="bg-primary/10 p-2 rounded-full shrink-0"> <Icon className="w-5 h-5 text-primary" /></div>
                                     <div className="min-w-0">
                                         <h3 className="font-medium text-base truncate">{activity.name}</h3>
                                         <p className="text-xs md:text-sm text-gray-500 flex items-center gap-1 truncate">

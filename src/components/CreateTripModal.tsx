@@ -190,7 +190,7 @@ export default function CreateTripModal({
               </span>
             </label>
             <Datepicker
-              placeholder="My Placeholder"
+              placeholder="Select Date"
               // inputClassName="w-full rounded-md focus:ring-0 font-normal bg-blue-300 placeholder:text-blue-100 text-white dark:bg-blue-900 dark:placeholder:text-blue-100"
               // inputClassName="input input-bordered w-full"
               inputClassName="input input-bordered w-full bg-base-100 text-base-content placeholder:text-base-content"

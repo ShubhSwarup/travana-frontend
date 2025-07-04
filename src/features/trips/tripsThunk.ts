@@ -48,3 +48,15 @@ export const fetchTripOverview = createAppThunk<TripOverview, string>({
   },
   showCloseButton: false,
 });
+
+// In tripsThunk.ts
+export const updateTrip = createAppThunk<
+  Trip,
+  { tripId: string; data: Partial<Trip> }
+>({
+  typePrefix: "trips/updateTrip",
+  payloadCreator: async ({ tripId, data }) => {
+    const res = await api.put(`/trips/${tripId}`, data);
+    return res.data;
+  },
+});

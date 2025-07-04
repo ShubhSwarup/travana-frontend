@@ -7,8 +7,8 @@ import {
   createTrip,
   fetchTripById,
   fetchTripOverview,
+  updateTrip,
 } from "./tripsThunk";
-import { Trip, TripOverview } from "../../types/trips";
 
 const initialState: TripState = {
   trips: [],
@@ -99,6 +99,26 @@ const tripSlice = createSlice({
         state.status = "failed";
         state.error = "Trip fetch failed";
       });
+
+    // Update Trip
+    builder.addCase(updateTrip.fulfilled, (state, action) => {
+      // Update trip in trips list (if it's there)
+      const index = state.trips.findIndex((t) => t._id === action.payload._id);
+      if (index !== -1) {
+        state.trips[index] = action.payload;
+      }
+
+      // Also update selectedTripOverview.trip if it's the same trip
+      if (
+        state.selectedTripOverview &&
+        state.selectedTripOverview.trip._id === action.payload._id
+      ) {
+        state.selectedTripOverview.trip = {
+          ...state.selectedTripOverview.trip,
+          ...action.payload,
+        };
+      }
+    });
   },
 });
 
